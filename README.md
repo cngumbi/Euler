@@ -1,6 +1,5 @@
 # to test some uses
-to test the uses of some operaters
-# is the same as %:
+to test the uses of some operaters # is the same as %:
 [] is the same as <::>
 {} is the same as <%%>
 now lets see the 
