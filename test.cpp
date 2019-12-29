@@ -10,14 +10,14 @@ int a, d;
 printf("the man in the white shirt");
 printf("the representation of the used");
 printf("enter valeu 1");
-scanf("%d",)
+scanf("%d", a)
 printf("enter valeu 2");
 scanf("%d", d);
-printf("sum is\t",tsum(a,b);
+printf("sum is %d ??/t",tsum(a,b);
 return 0;
 %>
 //the function to use
-int tsum(int k, int j);<% 
+int tsum(int k, int j)<% 
        sum = k + j;
        return sum;
 %>
