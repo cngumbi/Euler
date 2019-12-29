@@ -15,9 +15,9 @@ printf("enter valeu 2");
 scanf("%d", d);
 printf("sum is\t",tsum(a,b);
 return 0;
-
 %>
-int tsum(int k, int j);<
-% sum = k + j;
-return sum;
+//the function to use
+int tsum(int k, int j);<% 
+       sum = k + j;
+       return sum;
 %>
