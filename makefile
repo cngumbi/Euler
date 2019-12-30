@@ -15,7 +15,7 @@ OBJS=main.o tac.o
 tac: $(OBJS)
 	$(CC) -o $@ $^ $(CFLAGS)
 
-.PHONY:clean
+.PHONY: clean
 
 
 clean:
