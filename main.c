@@ -11,7 +11,7 @@ int main (int argc char *argv[]){
 	{
 		brd();
 		ply = (ply % 2)? 1 : 2;
-		printf("Player  %d  , enter a number:  ",ply);
+		printf("Player  %d  , enter a number:  ", ply);
 		scanf("%d", &chc);
 		mrk = (ply == 1) ? 'X' : 'O';
 		if (chc == 1 && sqr[1] == '1')
@@ -34,7 +34,7 @@ int main (int argc char *argv[]){
 			sqr[9] = mrk;
 		else
 		{
-			printf("Invalid move\n");
+			printf("Invalid move \n");
 			ply--;
 		}
 		i = chckwn();
