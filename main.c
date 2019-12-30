@@ -42,6 +42,6 @@ int main (int argc char *argv[]){
 	}while(i == -1);
 	brd();
 	if(i == 1)
-		printf("==>\a Player %d wins\n",ply);
+		printf(" ==>\a Player %d wins\n",ply);
 	return 0;
 }
