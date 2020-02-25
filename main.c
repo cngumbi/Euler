@@ -16,6 +16,7 @@ int main(int argc, char *argv[]){
 	printf("decription \n");
 	printf("1 \t Multiple of Three and Five \n");
 	printf("2 \t Even Fibonacci number\n");
+	printf("3\t Large prime factor\n"); 
 
 	switch(index)
 	{
@@ -27,6 +28,9 @@ int main(int argc, char *argv[]){
 	case 2:
 	even_fibonacci_display();
 	break;
+
+	case 3:
+	large_Primefactor();
 
 	default:
 	printf("not in range");

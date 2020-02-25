@@ -8,4 +8,6 @@ void multiple_3_5_display();
 
 void even_fibonacci_display();
 
+void large_Primefactor();
+
 #endif

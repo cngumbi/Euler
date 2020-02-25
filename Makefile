@@ -1,7 +1,7 @@
 objects = main.o calculate.o display.o
 
 edit: $(objects)
-	cc -o program $(objects)
+	cc -o edit $(objects)
 
 main.o: main.c calculate.h display.h
 	cc -c main.c

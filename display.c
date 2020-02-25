@@ -15,9 +15,20 @@ void multiple_3_5_display()
 void even_fibonacci_display(){
 
 	int fibon;
-	printf("Enter the number to be checked");
+	printf("Enter the number to be checked\t");
 	scanf("%d", fibon);
 	//call the fibonacci function
 	
 	even_fibonacci(fibon);
+}
+void large_PrimeFactor(){
+	
+	int pfactor;
+
+	printf("Enter the number to be checked\t");
+	scanf("%lld",pfactor);
+
+	//call the prime factor function
+	largePrimeFactor(pfactor);
+
 }
