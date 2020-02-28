@@ -21,19 +21,20 @@ int main(int argc, char *argv[]){
 	switch(index)
 	{
 
-	case 1:
-	multiple_3_5_display();
-	break;
+		case 1:
+			multiple_3_5_display();
+			break;
 
-	case 2:
-	even_fibonacci_display();
-	break;
+		case 2:
+			even_fibonacci_display();
+			break;
 
-	case 3:
-	large_Primefactor();
+		case 3:
+			large_Primefactor();
+			break;
 
-	default:
-	printf("not in range");
+		default:
+			printf("not in range");
 	
 	}
 	return 0;
