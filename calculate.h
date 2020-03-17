@@ -3,6 +3,8 @@
 
 //call the preprocessor
 
+#include <stdlib.h>
+#include <stdint.h>
 #include <math.h>
 #include <stdio.h>
 
