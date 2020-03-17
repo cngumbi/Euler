@@ -10,9 +10,14 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include<math.h>
 
 //funtion prototyping
 int multiple_3_5(int treeFive);
+int enter(int z);
+int even_fibonacci(int evenFibon);
+int large_prime_factor(int large);
+
 
 int main(int agrc, char *agrv[])
 {
@@ -25,6 +30,8 @@ int main(int agrc, char *agrv[])
     
     printf("Index \t Statement\n");
     printf("1 \t Multiple of Three and Five \n");
+    printf("2 \t Even Fibonacci numbers\n");
+    printf("3 \t Largest prime factor");
 
     //inputing the choice
 
@@ -38,14 +45,20 @@ int main(int agrc, char *agrv[])
     switch (index)
     {
     case 1:
-        printf("Enter the value to be checked\n");
-        scanf("%d",&value);
-        getchar();
-        system("clear");
-        //function call
+        enter(value);
+        //function call multiple of 3 and 5
         multiple_3_5(value);
         break;
-    
+    case 2:
+        enter(value);
+        //function call even fibonacci
+        even_fibonacci(value);
+        break;
+    case 3:
+        enter(value);
+        //function to calculate large prime factor
+        large_prime_factor(value);
+
     default:
         break;
     }
@@ -65,4 +78,47 @@ int multiple_3_5(int threeFive){
 
 	}
 	return threeFive;
+}
+int enter(int z){
+        printf("Enter the value to be checked\n");
+        scanf("%d",&z);
+        getchar();
+        system("clear");
+        return z;
+}
+//even fibonacci
+int even_fibonacci(int evenFibon){
+    int a, b;
+	a = 0;
+	b = 1;
+
+	//create a while loop
+	while(a<evenFibon){
+
+		a = b;
+		b = a + b;
+		//check if the fibonacci number is even
+		if(a % 2 == 0)
+			printf("Even fibonacci Number %d\n",a);
+	}
+
+}
+//function to calculate the large prime fuctor
+int large_prime_factor(int large){
+    int i, lmax = -1;
+    while(large % 2 == 0){
+        lmax = 2;
+        large /= 2; // to reduce large by 2
+    }
+    for(i = 3; i <= sqrt(large); i += 2){ // increase by 2 to get only odd numbers
+        while(large % i == 0){
+            lmax = 1;
+            large /= i;
+        }
+        if (large > 2){
+            lmax = large;
+        }
+
+    }
+    return lmax;
 }
