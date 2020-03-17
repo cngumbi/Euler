@@ -9,6 +9,7 @@
 //use: new development and test.
 
 #include <stdio.h>
+#include <stdlib.h>
 
 //funtion prototyping
 int multiple_3_5(int treeFive);
@@ -22,21 +23,25 @@ int main(int agrc, char *agrv[])
 
     //creating the printf statements
     
-    printf("Index \t Statement");
+    printf("Index \t Statement\n");
     printf("1 \t Multiple of Three and Five \n");
 
     //inputing the choice
 
     printf("Choose an Index \n");
-    scanf("%d", index);
+    scanf("%d", &index);
+    getchar();
+    system("clear");
     
     //creating a switch statemnet
 
     switch (index)
     {
     case 1:
-        printf("Enter the value to be checked");
-        scanf("%d",value);
+        printf("Enter the value to be checked\n");
+        scanf("%d",&value);
+        getchar();
+        system("clear");
         //function call
         multiple_3_5(value);
         break;
@@ -51,12 +56,12 @@ int multiple_3_5(int threeFive){
 
 	if (threeFive%3==0){
 		if (threeFive%5==0){
-			printf("%d Is a multiple of THREE and FIVE", threeFive);
+			printf("%d Is a multiple of THREE and FIVE\n", threeFive);
 
 		}
 	}
 	else{
-		printf("Not a multiple of FIVE and THREE");
+		printf("Not a multiple of FIVE and THREE\n");
 
 	}
 	return threeFive;
