@@ -57,7 +57,7 @@ int main(int agrc, char *agrv[])
     case 3:
         enter(value);
         //function to calculate large prime factor
-        large_prime_factor(value);
+        printf("Large prime factor %d",large_prime_factor(value));
 
     default:
         break;
