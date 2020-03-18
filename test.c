@@ -17,6 +17,7 @@ int multiple_3_5(int treeFive);
 int enter(int z);
 int even_fibonacci(int evenFibon);
 int large_prime_factor(int large);
+double squrt(double c);
 
 
 int main(int agrc, char *agrv[])
@@ -31,7 +32,7 @@ int main(int agrc, char *agrv[])
     printf("Index \t Statement\n");
     printf("1 \t Multiple of Three and Five \n");
     printf("2 \t Even Fibonacci numbers\n");
-    printf("3 \t Largest prime factor");
+    printf("3 \t Largest prime factor\n\n");
 
     //inputing the choice
 
@@ -57,7 +58,7 @@ int main(int agrc, char *agrv[])
     case 3:
         enter(value);
         //function to calculate large prime factor
-        large_prime_factor(value);
+        printf("Large prime factor %d\n",large_prime_factor(value));
 
     default:
         break;
@@ -110,7 +111,7 @@ int large_prime_factor(int large){
         lmax = 2;
         large /= 2; // to reduce large by 2
     }
-    for(i = 3; i <= sqrt(large); i += 2){ // increase by 2 to get only odd numbers
+    for(i = 3; i <= squrt(large); i += 2){ // increase by 2 to get only odd numbers
         while(large % i == 0){
             lmax = 1;
             large /= i;
@@ -121,4 +122,20 @@ int large_prime_factor(int large){
 
     }
     return lmax;
+}
+//create a square root function
+double squrt(double c){
+    float sqrot , t;
+    //store half of the input c
+    sqrot = c / 2;
+    t = 0;
+    //the loop Iterate untill squrt is different of c
+    while(sqrot != t){
+        //0 is updated with the initial value of 128
+        //and so on
+        t = sqrot;
+        // replace values
+        sqrot = (c / t + t) / 2;
+    }
+    return sqrot;
 }
