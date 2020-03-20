@@ -1,12 +1,12 @@
 CC=gcc
 CFLAGS=-std=c11
 DEPS=display.h calculate.h
-OBJS=main.o calculate.o display.o
+OBJS=test.o calculate.o display.o
 
 %.o:%.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
-euler:$(OBJS)
+test:$(OBJS)
 	$(CC) -o $@ $^ $(CFLAGS)
 
 .PHONY: clean
