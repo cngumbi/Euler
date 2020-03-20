@@ -34,13 +34,13 @@ int even_fibonacci(int evenFibon){
 
 }
 //function to calculate the large prime fuctor
-int large_prime_factor(int large){
+/*int large_prime_factor(int large){
     int i, lmax = -1;
     while(large % 2 == 0){
         lmax = 2;
         large /= 2; // to reduce large by 2
     }
-    for(i = 3; i <= squrt(large); i += 2){ // increase by 2 to get only odd numbers
+    for(i = 3; i <= sqrt(large); i += 2){ // increase by 2 to get only odd numbers
         while(large % i == 0){
             lmax = 1;
             large /= i;
@@ -51,4 +51,4 @@ int large_prime_factor(int large){
 
     }
     return lmax;
-}
+}*/

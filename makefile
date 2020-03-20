@@ -1,14 +1,15 @@
-euler  : main.O calculate.o display.o
-	cc -o euler main.o calculate.o display.o
+CC=gcc
+CFLAGS=-std=c11
+DEPS=display.h calculate.h
+OBJS=main.o calculate.o display.o
 
-main.o : main.c calculate.h display.h
-	cc -c main.c 
+%.o:%.c $(DEPS)
+	$(CC) -c -o $@ $< $(CFLAGS)
 
-calculate.o : calculate.c calculate.h
-	cc -c calculate.c
+euler:$(OBJS)
+	$(CC) -o $@ $^ $(CFLAGS)
 
-display.o : display.c display.h
-	cc -c display.c
+.PHONY: clean
 
-clean :
-	rm euler main.o calculate.o display.o
+clean:
+	rm -f $(OBJS)

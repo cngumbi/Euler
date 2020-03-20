@@ -48,9 +48,10 @@ int main(int agrc, char *agrv[])
         even_fibonacci(value);
         break;
     case 3:
-        enter(value);
+        //enter(value);
         //function to calculate large prime factor
-        printf("Large prime factor %d\n",large_prime_factor(value));
+       // printf("Large prime factor %d\n",large_prime_factor(value));
+       break;
 
     default:
         break;
