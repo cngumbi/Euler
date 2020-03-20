@@ -3,22 +3,21 @@ name: C/C++ CI
 on:
   push:
     branches:
-      -master
-      -release/*
+      - master
+      - release/*
   pull_request:
-    branches: 
-      -master
+    branches:
+      - master
   schedule:
-    -cron: "0 2 * * 1-5"
+    - cron: "0 2 * * 1-5"
 
 jobs:
   euler:
-    name: To Create os${{matrix.os}}  
+    name: To creating nothing${{matrix.os}}
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macOS-latest]
-    
+        os: [ubuntu-latest, windows-latest, macOS-latest]    
     steps:
     - uses: actions/checkout@v2
     - name: configure
