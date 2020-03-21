@@ -24,7 +24,7 @@ int main(int agrc, char *agrv[])
     printf("Index \t Statement\n");
     printf("1 \t Multiple of Three and Five \n");
     printf("2 \t Even Fibonacci numbers\n");
-    printf("3 \t Largest prime factor\n\n");
+    printf("3 \t Convert FAHRENHEITS to CELSIUS\n\n");
 
     //inputing the choice
 
@@ -48,6 +48,7 @@ int main(int agrc, char *agrv[])
         even_fibonacci(value);
         break;
     case 3:
+	fahrenhiets();
         //enter(value);
         //function to calculate large prime factor
        // printf("Large prime factor %d\n",large_prime_factor(value));
