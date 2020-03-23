@@ -33,6 +33,14 @@ int even_fibonacci(int evenFibon){
 	}
 
 }
+//create the fahrenhiets function
+int fahrenhiets()
+{
+	float fahr;
+	printf("FAHRENEITS\t CELSIUS\n");
+	for(fahr = LOWER; fahr <= UPPER; fahr += STEP)
+		printf("%3.2f\t\t%6.2f\n", fahr, (5.0/9.0)*(fahr - 32));
+}
 //function to calculate the large prime fuctor
 /*int large_prime_factor(int large){
     int i, lmax = -1;

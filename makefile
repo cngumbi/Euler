@@ -12,4 +12,4 @@ test:$(OBJS)
 .PHONY: clean
 
 clean:
-	rm -f $(OBJS)
+	rm -f test $(OBJS)
