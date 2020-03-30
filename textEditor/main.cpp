@@ -68,3 +68,12 @@ textbuf -> call_modify_callbacks();
 //creae a mono-space font like FL_COURIER
 //
 w -> editor -> textfont(FL_COURIER);
+//
+//create a custom window for the replace menu
+//
+Fl_Window *replace_dlg = new Fl_Window(300, 105, "Replace");
+Fl_Input *replace_find = new Fl_Input(70, 10, 200, 25, "Find");
+Fl_Input *replace_with = new Fl_input(70, 40, 200, 25, "Replace");
+Fl_Button *replace_all = new Fl_Button(10, 70, 90, 25, "Replace");
+Fl_Button *replace_next = new Fl_Button(105, 70, 120,25, "Replace Next");
+Fl_Button *replace_cancel = new Fl_Button(230, 70, 60, 25. "Cancel");
