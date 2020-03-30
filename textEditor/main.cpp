@@ -59,3 +59,8 @@ m -> copy(menuitems);
 //
 w -> editor = new Fl_Text_Editor(0, 30, 640, 370);
 w -> editor -> buffer(textbuf);
+//
+//add modify callback to keep track of changes to the file
+//
+textbuf -> add_modify_callback(change_cb, w);
+textbuf -> call_modify_callbacks();
