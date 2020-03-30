@@ -64,3 +64,7 @@ w -> editor -> buffer(textbuf);
 //
 textbuf -> add_modify_callback(change_cb, w);
 textbuf -> call_modify_callbacks();
+//
+//creae a mono-space font like FL_COURIER
+//
+w -> editor -> textfont(FL_COURIER);
