@@ -54,3 +54,8 @@ Fl_Menu_Item	menuitems[] = {
 //
 FL_Menu_bar *m = new Fl_Menu_Bar(0, 0, 640, 30);
 m -> copy(menuitems);
+//
+//the editor will use the Fl_Text_edtor to edit the text
+//
+w -> editor = new Fl_Text_Editor(0, 30, 640, 370);
+w -> editor -> buffer(textbuf);
