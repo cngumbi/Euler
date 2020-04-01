@@ -77,3 +77,17 @@ Fl_Input *replace_with = new Fl_input(70, 40, 200, 25, "Replace");
 Fl_Button *replace_all = new Fl_Button(10, 70, 90, 25, "Replace");
 Fl_Button *replace_next = new Fl_Button(105, 70, 120,25, "Replace Next");
 Fl_Button *replace_cancel = new Fl_Button(230, 70, 60, 25. "Cancel");
+//
+//create functions that will be used 
+//create the callback functions
+//
+//create changed_cb()
+//
+void change_cb(int, int nInserted, int NDeleted, int const char*, void* v){
+	if ((nInserted || nDeleted) && !loading)
+		changed = 1;
+	EditorWindow *w = (EditorWindow *)v;
+	set_title(w);
+	if(loading)
+		w -> editor -> show_insert_position();
+}
