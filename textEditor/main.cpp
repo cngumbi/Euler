@@ -91,3 +91,11 @@ void change_cb(int, int nInserted, int NDeleted, int const char*, void* v){
 	if(loading)
 		w -> editor -> show_insert_position();
 }
+//
+//create copy_cd() a function to copy the carrently selected text to the clipboard
+//
+void copy_cb(Fl_widget*, void* v){
+	editorWindow* e = (EditorWindow*)v;
+	Fl_Text_editor :: kf_copy(0, e -> editor);
+}
+
