@@ -107,4 +107,8 @@ void cut_cb(Fl_Widget*, void v){
 
 }
 //
+//creating a delete function
 //
+void delet_cb(Fl_Widget*, void* v ){
+	textbuf -> remove_selection();
+}
