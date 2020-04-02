@@ -98,4 +98,13 @@ void copy_cb(Fl_widget*, void* v){
 	editorWindow* e = (EditorWindow*)v;
 	Fl_Text_editor :: kf_copy(0, e -> editor);
 }
+//
+//this function will create a cut for the current selected text
+//
+void cut_cb(Fl_Widget*, void v){
+	EditorWindow* e = (EditorWindow*)v;
+	Fl_Text_Editor :: kf_cut(0, e -> editor);
 
+}
+//
+//
