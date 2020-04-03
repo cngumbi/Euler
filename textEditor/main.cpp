@@ -170,3 +170,20 @@ void open_cb(Fl_Widget*, void*){
 	if(newfile != NULL)
 		load_file(newfile, -1);
 }
+//
+//paste_cb() this function will paste to the clipboard at the current position
+//
+void paste_cb(Fl_wedget*, void* v){
+	EditorWindow* e = (EditorWindow*)v;
+	Fl_Text_Editor :: kf_paste(0, e -> editor);
+}
+//
+//quit_cb() this function will first see if the current file has been modified 
+//and if so give the user a change to save it the exit from the program
+//
+void quit_cb(Fl_Widget*, void*){
+	if (changed && !check_savd())
+		return;
+	exit(0);
+}
+
