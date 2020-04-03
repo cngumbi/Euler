@@ -365,3 +365,20 @@ void set_title(Fl_Window* w){
 	w -> label(title);
 
 }
+//
+//create the main function and tie all the support functions together with the main function
+//the main() function create a new text buffer, creates a new view(window)
+//for the text, shows the window, load the file on the command-line(if any)
+//and then enters the FLTK event loop
+//
+int main(int argc, char **argv){
+	textbuf = new Fl_Text_Buffer;
+
+	Fl_Windows* window = new_view();
+
+	window -> show(1, argv);
+
+	if (argc > 1)
+		load_file(argv[1], -1);
+	return Fl::run();
+}
