@@ -308,3 +308,25 @@ int check_save(void){
 	}
 	return (r == 2) ? 1 : 0;
 }
+//
+//load_file() this function loads the specified file into the textbuf class
+//
+int loading = 0;
+void load_file(char *newfile, int ipos){
+	loading = 1;
+	int insert = (ipos != -1);
+	changed = insert;
+	if (!insert)
+		strcpy(filename,"");
+	if (!insert)
+		r = textbuf -> loadfile(newfile);
+	else
+		r = textbuf -> insertfile(newfile, ipos);
+	if(r)
+		fl_alert("Error reading from file \'%s\':\n%s.",newfile, strerror(errno));
+	else
+		if(!insert)
+			strcpy(filename, newfile);
+	loading = 0;
+	textbuf -> call_modify_callbacks();
+}
