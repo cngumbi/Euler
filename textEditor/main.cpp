@@ -224,3 +224,42 @@ void replace2_cb(Fl_Widget*, void* v){
 	}
 	else fl_alert("No occurences of \'%s\' found!", find);
 }
+//
+//replall_cb() this function will replace all occurences of the search string in the file
+//
+void replall_cb(Fl_Widget*, void* v){
+	EditorWindow* e = (EditorWindow*)v;
+	const char *find = e-> replace_find -> value();
+	const char *replace = e -> replace_with -> value();
+
+	find = e -> replace_find -> value();
+	if (find[0] == '\0'){
+		//search string is blank; get a new one
+		e -> replace_dlg->show();
+		return;
+	}
+
+	e -> replace_dlg -> hide();
+	e ->editor -> insert_position(0);
+	int times = 0;
+
+	// loop through the whole string
+	for (int found = 1; found;){
+		int pos = e -> editor -> insert_position();
+		found = textbuf -> search_forward(pos, find, &pos);
+
+		if (found){
+			//Found a match; update the position and replace text
+			textbuf -> select(pos, pos + strlen(find));
+			textbuf -> remove_selection();
+			textbuf -> insert(pos, replace);
+			e -> editor -> insert_position(pos + strlen(replace));
+			e -> editor -> show_insert_position();
+			times++;
+		}
+		if(times)
+			fl_message("Replaced %d occurrences.", times);
+		else
+			fl_alert("No occurrences of \'%s\' found!", find);
+	}
+}
