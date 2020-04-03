@@ -126,3 +126,23 @@ void find_cb(Fl_Widget* w, void* v){
 		find2_cb(w, v);
 	}
 }
+//
+//find2_cb will find the next occurrence of the search string
+//
+void find2_cb(Fl_Widget* w, void* v){
+	EditorWindow* e = (EditorWindow*)v;
+	if (e -> search[0] == '\0'){
+		//search string is blank; get a new one
+		find_cb(w, v);
+		return;
+	}
+	int pos = e -> editor -> insert_positio();
+	int found = textbuf -> search_forward(pos, e -> search, &pos);
+	if (found){
+		//found a match; select and update the position
+		textbuf -> select(pos, pos+strlen(e -> search));
+		e -> editor -> insert_position(pos+strlen(e ->search));
+		e -> editor -> show_insert_position();
+	}
+	else fl_alert("No occurrences of \'%s\' found!", e ->search);
+}
