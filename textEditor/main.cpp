@@ -293,4 +293,18 @@ void saveas_cb(void){
 	if (newfile != NULL)
 		save_file(newfile);
 }
-
+//
+//check_save() this function checks to see if the current file needs to be saved
+//
+int check_save(void){
+	if (!changed)
+		return 1;
+	int r = fl_choice("The current file has not been saved.\n"
+			"Would you like to save it now?",
+			"Cancel", "Save", "Discard");
+	if ( r == 1){
+		save_cb();	//save the file
+		return !changed;
+	}
+	return (r == 2) ? 1 : 0;
+}
