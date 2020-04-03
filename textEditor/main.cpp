@@ -283,4 +283,14 @@ void save_cb(void){
 	else
 		save_file(filename);
 }
+//
+//saveas_cb() this function asks the user for a filename and saves the current file
+//
+void saveas_cb(void){
+	char *newfile;
+
+	newfile = fl_file_chooser("Save File As?", "*", filename);
+	if (newfile != NULL)
+		save_file(newfile);
+}
 
