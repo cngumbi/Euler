@@ -186,4 +186,11 @@ void quit_cb(Fl_Widget*, void*){
 		return;
 	exit(0);
 }
+//
+//replace_cb() this fucntion just shows the replace dialog
+//
+void rplece_cb(Fl_Widget*, void* v){
+	EditorWindow* e = (EditorWindow*)v;
+	e -> replace_dlg -> show();
+}
 
