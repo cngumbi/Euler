@@ -341,3 +341,27 @@ void save_file(char *newfile){
 	changed = 0;
 	textbuf -> call_modify_callbacks();
 }
+//
+//set_title() this function checks the changed variable and updates the window label accordingly
+//
+void set_title(Fl_Window* w){
+	if (filename[0] == '\0')
+		strcpy(title, "Untitled");
+	else{
+		char *slash;
+		slash = strrchr(filename. '/');
+	#ifdef WIN32
+		if (slash == NULL) 
+			slash = strrchr(filename, '\\');
+	#endif
+		if (slash != NULL)
+			strcpy(title, slash + 1);
+		else
+			strcpy(title, filename);
+	}
+
+	if (changed)
+		strcat(title, "(modified)");
+	w -> label(title);
+
+}
