@@ -193,4 +193,34 @@ void rplece_cb(Fl_Widget*, void* v){
 	EditorWindow* e = (EditorWindow*)v;
 	e -> replace_dlg -> show();
 }
+//
+//replace2_cb() this will replace the next occurence of the replacement string
+//if nothing has been entered for the replacement string, then the replace dialog is displayed instead
+//
+void replace2_cb(Fl_Widget*, void* v){
+	EditorWindow* e = (EditorWindor*)v;
+	const char *find = e -> replace_find -> value();
+	const char *replace = e -> replace_with -> value();
 
+	if (find[0] == '\0'){
+		//search string is black; get a new one
+		e -> replace_dlg -> show();
+		return;
+	}
+
+	e ->replace_dlg -> hide();
+
+	int pos = e -> editor -> insert_position();
+	int found = textbuf -> search_forward(pos, find, &pos);
+
+	if (found){
+		//found a match; update the position and replace text
+		textbuf -> select(pos, pos + strlen(find));
+		textbuf -> remove_selection();
+		textbuf -> insert(pos, replace);
+		textbuf -> select(pos, pos + strlen(replace));
+		e -> editor -> insert_position(pos + strlen(replace));
+		e -> editor -> show_insert_position();
+	}
+	else fl_alert("No occurences of \'%s\' found!", find);
+}
