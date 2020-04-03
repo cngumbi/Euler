@@ -158,4 +158,15 @@ void new_cb(Fl_widget*, void*){
 	textbuf -> remove_selection();
 	change = 0;
 	textbuf -> call_modify_callbacks();
-}	
+}
+//
+//open_cb() this function will ask the user for a filename and then load the specified file into th input widget and current filename.
+//it also calls the check_save()
+//
+void open_cb(Fl_Widget*, void*){
+	if (!check_save())
+		return;
+	char *newfile = fl_file_chooser("Open File?", "*", filename);
+	if(newfile != NULL)
+		load_file(newfile, -1);
+}
