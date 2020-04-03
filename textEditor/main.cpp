@@ -146,3 +146,16 @@ void find2_cb(Fl_Widget* w, void* v){
 	}
 	else fl_alert("No occurrences of \'%s\' found!", e ->search);
 }
+//
+//new_cb() this function will clear the editor widget and current filename.
+//it also calls check_save() to give the user the opportunity to save the current file
+//
+void new_cb(Fl_widget*, void*){
+	if(!check_save())
+		return;
+	filename[0] = '\0';
+	textbuf -> selected(0, textbuf -> length());
+	textbuf -> remove_selection();
+	change = 0;
+	textbuf -> call_modify_callbacks();
+}	
