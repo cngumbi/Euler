@@ -270,3 +270,17 @@ void replace_cb(Fl_Widget*, void* v){
 	EditorWindow* e = (EditorWindow*)v;
 	 e -> replace_dlg -> hide();
 }
+//
+//save_cb() this function saves the current file
+//if the current filename is blank it calls the save as function
+//
+void save_cb(void){
+	if (filename[0] == '\0'){
+		// No filename - get one!
+		saveas_cb();
+		return;
+	}
+	else
+		save_file(filename);
+}
+
