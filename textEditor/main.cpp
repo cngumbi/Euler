@@ -263,3 +263,10 @@ void replall_cb(Fl_Widget*, void* v){
 			fl_alert("No occurrences of \'%s\' found!", find);
 	}
 }
+//
+//replcan_cb() this function hides the replace dialog
+//
+void replace_cb(Fl_Widget*, void* v){
+	EditorWindow* e = (EditorWindow*)v;
+	 e -> replace_dlg -> hide();
+}
