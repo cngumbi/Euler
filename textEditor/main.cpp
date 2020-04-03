@@ -330,3 +330,14 @@ void load_file(char *newfile, int ipos){
 	loading = 0;
 	textbuf -> call_modify_callbacks();
 }
+//
+//save_file() this function saves the current buffer to the specified file
+//
+void save_file(char *newfile){
+	if (textbuf -> savefile(newfile))
+		fl_alert("Error writing to file \'%s\':\n%s"., newfile, strerror(errno));
+	else
+		strcpy(filename, newfile);
+	changed = 0;
+	textbuf -> call_modify_callbacks();
+}
