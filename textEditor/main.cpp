@@ -112,3 +112,17 @@ void cut_cb(Fl_Widget*, void v){
 void delet_cb(Fl_Widget*, void* v ){
 	textbuf -> remove_selection();
 }
+//
+//create the find function
+//
+void find_cb(Fl_Widget* w, void* v){
+	EditorWindow* e = (EditorWindow*)v;
+	const char *val;
+
+	val = fl_input("Search string:", e -> search);
+	if (val != NULL){
+		// user entered a string - go find it!
+		strcpy(e -> search, val);
+		find2_cb(w, v);
+	}
+}
