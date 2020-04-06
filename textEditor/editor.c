@@ -1,5 +1,5 @@
 //
-//this project is to create a text edito
+//this project is to create a text editor
 //author: cngumbi
 //version: 1.0.0
 //
@@ -78,13 +78,39 @@ char editorReadKey(){
 	return v;
 }
 //
+//create a function to get the cursor position
+//
+int getCursorPosition(int *rows, int *cols){
+	char buf[32];
+	unsigned int i =0;
+	if(write(STDOUT_FILENO, "\x1b[6n", 4) != 4)
+		return -1;
+	while (i < sizeof(buf) - 1){
+		if(read(STDIN_FILENO, &buf[i], 1) != 1)
+			break;
+		if (buf[i] == 'R')
+			break;
+		i++;
+	}
+	buf[i] = '\0';
+
+	printf("\r\n&buf[1]: '%s'\r\n", &buf[1]);
+
+	editorReadKey();
+
+	return -1;
+}
+//
 //create a function to get the window size
 //
 int getWindowSize(int *rows, int *cols){
 	struct winsize ws;
 
-	if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws) == -1 || ws.ws_col == 0)
-		return -1;
+	if (1 || ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws) == -1 || ws.ws_col == 0){
+		if (write(STDOUT_FILENO, "\x1b[999C\x1b[999B", 12) != 12)
+			return -1;
+		return getCursorPosition(rows, cols);
+	}
 	else{
 		*cols = ws.ws_col;
 		*rows = ws.ws_row;
@@ -99,7 +125,7 @@ int getWindowSize(int *rows, int *cols){
 //
 void editorDrawRows(){
 	int y;
-	for (y = 0; y < 24; y++)
+	for (y = 0; y < K.screenrows; y++)
 		write(STDOUT_FILENO, "~\r\n", 3);
 }
 //
@@ -109,7 +135,7 @@ void editorRefreshScreen(){
 	//this line of code clears the screen
 	write(STDOUT_FILENO, "\x1b[2J", 4);
 	//this lineof code repositions the cursor to the top-left corner of the screen
-	write(STDOUT_FILENO, "\xb[H", 3);
+	write(STDOUT_FILENO, "\x1b[H", 3);
 
 	editorDrawRows();
 
@@ -136,9 +162,17 @@ char editorProcessKeypress(){
 //
 //*********************INIT****************************
 //
+void initEditor(){
+	if(getWindowSize(&K.screenrows, &K.screencols) == -1)
+		die("getWindowSize");
+}
+//
+//the main function
+//
 int main(int argc, char *argv)
 {
 	enableRawMode();
+	initEditor();
 
 	while(1){
 		editorRefreshScreen();
