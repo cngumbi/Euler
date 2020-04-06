@@ -19,6 +19,20 @@
 #define EDITOR_VERSION "0.0.1"
 #define CTRL_KEY(k) ((k) & 0x1f)
 //
+//create an enum to store the arrow keys
+//
+enum editorKey{
+	ARROW_LEFT = 1000,
+	ARROW_RIGHT,
+	ARROW_UP,
+	ARROW_DOWN,
+	DEL_KEY,
+	HOME_KEY,
+	END_KEY,
+	PAGE_UP,
+	PAGE_DOWN
+};
+//
 //*******************DATA*******************************
 //
 
@@ -72,13 +86,72 @@ void enableRawMode(){
 //
 //create a function to read low level keypress
 //
-char editorReadKey(){
+int editorReadKey(){
 	int nread;
 	char v;
 	while((nread = read(STDIN_FILENO, &v, 1)) != 1)
 		if(nread == -1 && errno != EAGAIN)
 			die("read");
-	return v;
+	if (v == '\x1b'){
+		char seq[3];
+		if(read(STDIN_FILENO, &seq[0], 1) != 1)
+			return '\x1b';
+		if(read(STDIN_FILENO, &seq[1], 1) != 1)
+			return '\x1b';
+
+		if(seq[0] == '['){
+			if(seq[1] >= '0' && seq[1] <= '9'){
+				if(read(STDIN_FILENO, &seq[2], 1) != 1)
+					return '\x1b';
+				if(seq[2] == '~'){
+					switch(seq[1]){
+						case '1':
+							return HOME_KEY;
+						case '3':
+							return DEL_KEY;
+						case '4':
+							return END_KEY;
+						case '5':
+							return PAGE_UP;
+						case '6':
+							return PAGE_DOWN;
+						case '7':
+							return HOME_KEY;
+						case '8':
+							return END_KEY;
+					}
+				}
+			}
+			else{
+				switch (seq[1]){
+					case 'A':
+						return ARROW_UP;
+					case 'B':
+						return ARROW_DOWN;
+					case 'C':
+						return ARROW_RIGHT;
+					case 'D':
+						return ARROW_LEFT;
+					case 'H':
+						return HOME_KEY;
+					case 'F':
+						return END_KEY;
+				}
+			}
+		}
+		else if(seq[0] == 'O'){
+			switch(seq[1]){
+				case 'H':
+					return HOME_KEY;
+				case 'F':
+					return END_KEY;
+			}
+		}
+
+		return '\x1b';
+	}
+	else
+		return v;
 }
 //
 //create a function to get the cursor position
@@ -210,24 +283,29 @@ void editorRefreshScreen(){
 //
 //create a function for mappping keypressen to editor operations
 //
-void editorMoveCursor(char key){
+void editorMoveCursor(int key){
 	switch(key){
-		case 'a':
-			K.vx--;
+		case ARROW_LEFT:
+			//preventing the cursor from mving off the screen
+			if(K.vx != 0)
+				K.vx--;
 			break;
-		case 'd':
-			K.vx++;
+		case ARROW_RIGHT:
+			if(K.vx != K.screencols - 1)
+				K.vx++;
 			break;
-		case 'w':
-			K.vy--;
+		case ARROW_UP:
+			if(K.vy != 0)
+				K.vy--;
 			break;
-		case 's':
-			K.vy++;
+		case ARROW_DOWN:
+			if(K.vy != K.screenrows - 1)
+				K.vy++;
 			break;
 	}
 }
-char editorProcessKeypress(){
-	char v = editorReadKey();
+void editorProcessKeypress(){
+	int v = editorReadKey();
 
 	switch(v){
 		case CTRL_KEY('Q'):
@@ -235,10 +313,22 @@ char editorProcessKeypress(){
 			write(STDOUT_FILENO,"\x1b[H",3);
 			exit(0);
 			break;
-		case 'w':
-		case 's':
-		case 'a':
-		case 'd':
+		case HOME_KEY:
+			K.vx = 0;
+			break;
+		case END_KEY:
+			K.vx = K.screencols - 1;
+		case PAGE_UP:
+		case PAGE_DOWN:
+			{
+				int times = K.screenrows;
+				while(times--)
+					editorMoveCursor(v == PAGE_UP ? ARROW_UP : ARROW_DOWN);
+			}
+		case ARROW_UP:
+		case ARROW_DOWN:
+		case ARROW_LEFT:
+		case ARROW_RIGHT:
 			editorMoveCursor(v);
 			break;
 	}
