@@ -9,18 +9,21 @@
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/ioctl.h>
 #include <termios.h>
 #include <unistd.h>
 //
 //*******************DEFINE****************************
 //
+#define EDITOR_VERSION "0.0.1"
 #define CTRL_KEY(k) ((k) & 0x1f)
 //
 //*******************DATA*******************************
 //
 
 struct editorConfig{
+	int vx, vy;
 	int screenrows;
 	int screencols;
 	struct termios orig_termios;
@@ -119,32 +122,86 @@ int getWindowSize(int *rows, int *cols){
 	}
 }
 //
+//*********************APPEND BUFFER*******************
+//
+struct abuf{
+	char *b;
+	int len;
+};
+
+#define ABUF_INIT {NULL, 0}
+//
+//create the abAppend() and abFree() function of the buffer
+//
+void abAppend(struct abuf *ab, const char *s, int len){
+	char *new = realloc(ab -> b, ab -> len + len);
+
+	if (new == NULL) 
+		return;
+	memcpy(&new[ab -> len], s, len);
+	ab -> b = new;
+	ab -> len += len;
+}
+
+void abFree(struct abuf *ab){
+	free(ab -> b);
+}
 //*********************OUTPUT**************************
 //
 //
 //create a function to draw a column of tidles(~)
 //
-void editorDrawRows(){
+void editorDrawRows(struct abuf *ab){
 	int y;
 	for (y = 0; y < K.screenrows; y++){
-		write(STDOUT_FILENO, "~", 1);
+		if (y == K.screenrows / 3){
+			//write welcme massage
+			char welcome[80];
+			int welcomelen = snprintf(welcome, sizeof(welcome), " Editor --version %s", EDITOR_VERSION);
+			if(welcomelen > K.screencols)
+				welcomelen = K.screencols;
+			int padding = (K.screencols - welcomelen) / 2;
+			if(padding){
+				abAppend(ab, "~", 1);
+				padding--;
+			}
+			while(padding--)
+				abAppend(ab, " ", 1);
 
+			abAppend(ab, welcome, welcomelen);
+		}
+		else
+			abAppend(ab, "~", 1);
+
+		abAppend(ab,"\x1b[K", 3);
 		if(y <K.screenrows - 1)
-			write(STDOUT_FILENO, "\r\n", 2);
+			abAppend(ab, "\r\n", 2);
 	}
 }
 //
 //create a function to refresh screen
 //
 void editorRefreshScreen(){
-	//this line of code clears the screen
-	write(STDOUT_FILENO, "\x1b[2J", 4);
+	struct abuf ab = ABUF_INIT;
+	//this code hides the cursor before refreshing the screen
+	abAppend(&ab, "\x1b[?25l", 6);
 	//this lineof code repositions the cursor to the top-left corner of the screen
-	write(STDOUT_FILENO, "\x1b[H", 3);
+	abAppend(&ab, "\x1b[H", 3);
 
-	editorDrawRows();
+	editorDrawRows(&ab);
+	//
+	//this code will mave the cursor to the position sore in K.vx and K.vy
+	//
+	char buf[32];
+	snprintf(buf, sizeof(buf), "\x1b[%d;%dH", K.vy + 1, K.vx +1);
+	abAppend(&ab, buf, strlen(buf));
+	
+	//the code enable the cursor to appear after the refresh is over
+	abAppend(&ab, "\x1b[?25h", 6);
 
-	write(STDOUT_FILENO, "\x1b[H", 3);
+	write(STDOUT_FILENO, ab.b, ab.len);
+	//free the memory alocation using the destractor
+	abFree(&ab);
 
 }
 //
@@ -153,6 +210,22 @@ void editorRefreshScreen(){
 //
 //create a function for mappping keypressen to editor operations
 //
+void editorMoveCursor(char key){
+	switch(key){
+		case 'a':
+			K.vx--;
+			break;
+		case 'd':
+			K.vx++;
+			break;
+		case 'w':
+			K.vy--;
+			break;
+		case 's':
+			K.vy++;
+			break;
+	}
+}
 char editorProcessKeypress(){
 	char v = editorReadKey();
 
@@ -162,12 +235,20 @@ char editorProcessKeypress(){
 			write(STDOUT_FILENO,"\x1b[H",3);
 			exit(0);
 			break;
+		case 'w':
+		case 's':
+		case 'a':
+		case 'd':
+			editorMoveCursor(v);
+			break;
 	}
 }
 //
 //*********************INIT****************************
 //
 void initEditor(){
+	K.vx = 0;
+	K.vy = 0;
 	if(getWindowSize(&K.screenrows, &K.screencols) == -1)
 		die("getWindowSize");
 }
