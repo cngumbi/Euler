@@ -234,7 +234,7 @@ void editorOpen(char *filename){
 	size_t linecap = 0;
 	ssize_t linelen;
 	linelen = getline(&line, &linecap, fp);
-	if(linelen != -1){
+	while((linelen = getline(&line, &linecap, fp))  != -1){
 		while(linelen > 0 && (line[linelen - 1] == '\n' || line[linelen - 1] == '\r'))
 			linelen--;
 		editorAppendRow(line, linelen);
@@ -295,9 +295,10 @@ void editorDrawRows(struct abuf *ab){
 				abAppend(ab, "~", 1);
 		}
 		else {
-			int len = K.row.size;
+			int len = K.row[y].size;
 			if(len > K.screencols)
 				len = K.screencols;
+			abAppend(ab, K.row[y].chars, len);
 		}
 			abAppend(ab,"\x1b[K", 3);
 			if(y <K.screenrows - 1)
