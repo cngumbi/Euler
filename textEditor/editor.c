@@ -5,12 +5,19 @@
 //
 //*******************INCLUDES************************
 //
+//feature test macro
+//
+#define _DEFAULT_SOURCE
+#define _BSD_SOURCE
+#define _GNU_SOURCE
+
 #include <ctype.h>
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/ioctl.h>
+#include <sys/types.h>
 #include <termios.h>
 #include <unistd.h>
 //
@@ -35,11 +42,19 @@ enum editorKey{
 //
 //*******************DATA*******************************
 //
+//
+//this is a data type for storing a row of text in our editor
+typedef struct erow{
+	int size;
+	char *chars;
+}erow;
 
 struct editorConfig{
 	int vx, vy;
 	int screenrows;
 	int screencols;
+	int numrows;
+	erow *row;
 	struct termios orig_termios;
 };
 struct editorConfig K;
@@ -195,6 +210,38 @@ int getWindowSize(int *rows, int *cols){
 	}
 }
 //
+//********************ROW OPERATIONS*******************
+//
+void editorAppendRow(char *s, size_t len){
+	K.row = realloc(K.row, sizeof(erow) * (K.numrows + 1));
+
+	int at = K.numrows;
+	K.row[at].size = len;
+	K.row[at].chars = malloc(len + 1);
+	memcpy(K.row[at].chars, s, len);
+	K.row[at].chars[len] = '\0';
+	K.numrows++;
+}
+//********************FILE i/o*************************
+//
+void editorOpen(char *filename){
+	FILE *fp = fopen(filename, "r");
+	if(!fp)
+		die("fopen");
+
+
+	char *line = NULL;
+	size_t linecap = 0;
+	ssize_t linelen;
+	linelen = getline(&line, &linecap, fp);
+	if(linelen != -1){
+		while(linelen > 0 && (line[linelen - 1] == '\n' || line[linelen - 1] == '\r'))
+			linelen--;
+		editorAppendRow(line, linelen);
+	}
+	free(line);
+	fclose(fp);
+}
 //*********************APPEND BUFFER*******************
 //
 struct abuf{
@@ -227,29 +274,35 @@ void abFree(struct abuf *ab){
 void editorDrawRows(struct abuf *ab){
 	int y;
 	for (y = 0; y < K.screenrows; y++){
-		if (y == K.screenrows / 3){
-			//write welcme massage
-			char welcome[80];
-			int welcomelen = snprintf(welcome, sizeof(welcome), " Editor --version %s", EDITOR_VERSION);
-			if(welcomelen > K.screencols)
-				welcomelen = K.screencols;
-			int padding = (K.screencols - welcomelen) / 2;
-			if(padding){
-				abAppend(ab, "~", 1);
-				padding--;
+		if(y >= K.numrows){
+			if (K.numrows == 0 && y == K.screenrows / 3){
+				//write welcme massage
+				char welcome[80];
+				int welcomelen = snprintf(welcome, sizeof(welcome), " Editor --version %s", EDITOR_VERSION);
+				if(welcomelen > K.screencols)
+					welcomelen = K.screencols;
+				int padding = (K.screencols - welcomelen) / 2;
+				if(padding){
+					abAppend(ab, "~", 1);
+					padding--;
+				}
+				while(padding--)
+					abAppend(ab, " ", 1);
+	
+				abAppend(ab, welcome, welcomelen);
 			}
-			while(padding--)
-				abAppend(ab, " ", 1);
-
-			abAppend(ab, welcome, welcomelen);
+			else
+				abAppend(ab, "~", 1);
 		}
-		else
-			abAppend(ab, "~", 1);
-
-		abAppend(ab,"\x1b[K", 3);
-		if(y <K.screenrows - 1)
-			abAppend(ab, "\r\n", 2);
-	}
+		else {
+			int len = K.row.size;
+			if(len > K.screencols)
+				len = K.screencols;
+		}
+			abAppend(ab,"\x1b[K", 3);
+			if(y <K.screenrows - 1)
+				abAppend(ab, "\r\n", 2);
+		}
 }
 //
 //create a function to refresh screen
@@ -339,16 +392,21 @@ void editorProcessKeypress(){
 void initEditor(){
 	K.vx = 0;
 	K.vy = 0;
+	K.numrows = 0;
+	K.row = NULL;
+
 	if(getWindowSize(&K.screenrows, &K.screencols) == -1)
 		die("getWindowSize");
 }
 //
 //the main function
 //
-int main(int argc, char *argv)
+int main(int argc, char *argv[])
 {
 	enableRawMode();
 	initEditor();
+	if(argc >= 2)
+		editorOpen(argv[1]);
 
 	while(1){
 		editorRefreshScreen();
