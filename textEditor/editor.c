@@ -272,10 +272,17 @@ void abFree(struct abuf *ab){
 //
 //create a function to draw a column of tidles(~)
 //
+void editorScroll(){
+	if(K.vy < K.rowoff)
+		K.rowoff = K.vy;
+	if(K.vy >= K.rowoff + K.screenrows)
+		K.rowoff = K.vy - K.screenrows + 1;
+}
 void editorDrawRows(struct abuf *ab){
 	int y;
 	for (y = 0; y < K.screenrows; y++){
-		if(y >= K.numrows){
+		int filerow = y + K.rowoff;
+		if(filerow >= K.numrows){
 			if (K.numrows == 0 && y == K.screenrows / 3){
 				//write welcme massage
 				char welcome[80];
@@ -296,10 +303,10 @@ void editorDrawRows(struct abuf *ab){
 				abAppend(ab, "~", 1);
 		}
 		else {
-			int len = K.row[y].size;
+			int len = K.row[filerow].size;
 			if(len > K.screencols)
 				len = K.screencols;
-			abAppend(ab, K.row[y].chars, len);
+			abAppend(ab, K.row[filerow].chars, len);
 		}
 			abAppend(ab,"\x1b[K", 3);
 			if(y <K.screenrows - 1)
@@ -310,6 +317,7 @@ void editorDrawRows(struct abuf *ab){
 //create a function to refresh screen
 //
 void editorRefreshScreen(){
+	editorScroll();
 	struct abuf ab = ABUF_INIT;
 	//this code hides the cursor before refreshing the screen
 	abAppend(&ab, "\x1b[?25l", 6);
@@ -321,7 +329,7 @@ void editorRefreshScreen(){
 	//this code will mave the cursor to the position sore in K.vx and K.vy
 	//
 	char buf[32];
-	snprintf(buf, sizeof(buf), "\x1b[%d;%dH", K.vy + 1, K.vx +1);
+	snprintf(buf, sizeof(buf), "\x1b[%d;%dH", (K.vy - K.rowoff) + 1, K.vx +1);
 	abAppend(&ab, buf, strlen(buf));
 	
 	//the code enable the cursor to appear after the refresh is over
@@ -354,7 +362,7 @@ void editorMoveCursor(int key){
 				K.vy--;
 			break;
 		case ARROW_DOWN:
-			if(K.vy != K.screenrows - 1)
+			if(K.vy != K.numrows - 1)
 				K.vy++;
 			break;
 	}
