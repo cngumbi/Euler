@@ -52,6 +52,7 @@ typedef struct erow{
 struct editorConfig{
 	int vx, vy;
 	int rowoff;
+	int coloff;
 	int screenrows;
 	int screencols;
 	int numrows;
@@ -277,6 +278,10 @@ void editorScroll(){
 		K.rowoff = K.vy;
 	if(K.vy >= K.rowoff + K.screenrows)
 		K.rowoff = K.vy - K.screenrows + 1;
+	if(K.vx < K.coloff)
+		K.coloff = K.vx;
+	if(K.vx >= K.coloff + K.screencols)
+		K.coloff = K.vx - K.screencols + 1;
 }
 void editorDrawRows(struct abuf *ab){
 	int y;
@@ -303,10 +308,12 @@ void editorDrawRows(struct abuf *ab){
 				abAppend(ab, "~", 1);
 		}
 		else {
-			int len = K.row[filerow].size;
+			int len = K.row[filerow].size - K.coloff;
+			if(len < 0)
+				len = 0;
 			if(len > K.screencols)
 				len = K.screencols;
-			abAppend(ab, K.row[filerow].chars, len);
+			abAppend(ab, &K.row[filerow].chars[K.coloff], len);
 		}
 			abAppend(ab,"\x1b[K", 3);
 			if(y <K.screenrows - 1)
@@ -329,7 +336,7 @@ void editorRefreshScreen(){
 	//this code will mave the cursor to the position sore in K.vx and K.vy
 	//
 	char buf[32];
-	snprintf(buf, sizeof(buf), "\x1b[%d;%dH", (K.vy - K.rowoff) + 1, K.vx +1);
+	snprintf(buf, sizeof(buf), "\x1b[%d;%dH", (K.vy - K.rowoff) + 1, (K.vx - K.coloff) +1);
 	abAppend(&ab, buf, strlen(buf));
 	
 	//the code enable the cursor to appear after the refresh is over
@@ -354,8 +361,7 @@ void editorMoveCursor(int key){
 				K.vx--;
 			break;
 		case ARROW_RIGHT:
-			if(K.vx != K.screencols - 1)
-				K.vx++;
+			K.vx++;
 			break;
 		case ARROW_UP:
 			if(K.vy != 0)
@@ -403,6 +409,7 @@ void initEditor(){
 	K.vx = 0;
 	K.vy = 0;
 	K.rowoff = 0;
+	K.coloff = 0;
 	K.numrows = 0;
 	K.row = NULL;
 
