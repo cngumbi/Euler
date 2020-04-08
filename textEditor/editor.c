@@ -367,8 +367,13 @@ void editorMoveCursor(int key){
 			}
 			break;
 		case ARROW_RIGHT:
-			if(K.vy != 0)
+			if(K.vy != 0){
 				K.vx++;
+			}
+			else if(row && K.vx == row->size){
+				K.vy++;
+				K.vx = 0;
+			}
 			break;
 		case ARROW_UP:
 			if(K.vy != 0)
