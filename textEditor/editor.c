@@ -358,8 +358,13 @@ void editorMoveCursor(int key){
 	switch(key){
 		case ARROW_LEFT:
 			//preventing the cursor from mving off the screen
-			if(K.vx != 0)
+			if(K.vx != 0){
 				K.vx--;
+			}
+			else if(K.vy > 0){
+				K.vy--;
+				K.vx = K.row[K.vy].size;
+			}
 			break;
 		case ARROW_RIGHT:
 			if(K.vy != 0)
