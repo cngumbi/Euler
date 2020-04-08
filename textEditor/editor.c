@@ -19,6 +19,7 @@
 #include <sys/ioctl.h>
 #include <sys/types.h>
 #include <termios.h>
+#include <time.h>
 #include <unistd.h>
 //
 //*******************DEFINE****************************
@@ -62,6 +63,9 @@ struct editorConfig{
 	int screencols;
 	int numrows;
 	erow *row;
+	char *filename;
+	char statusmsg_time[80];
+	time_t statusmsg_time;
 	struct termios orig_termios;
 };
 struct editorConfig K;
@@ -271,6 +275,8 @@ void editorAppendRow(char *s, size_t len){
 //********************FILE i/o*************************
 //
 void editorOpen(char *filename){
+	free(K.filename);
+	K.filename = strdup(filename);
 	FILE *fp = fopen(filename, "r");
 	if(!fp)
 		die("fopen");
@@ -367,6 +373,28 @@ void editorDrawRows(struct abuf *ab){
 			abAppend(ab, "\r\n", 2);
 		}
 }
+
+void editorDrawStatusBar(struct abuf *ab){
+	abAppend(ab, "\x1b[7m", 4);
+	char status[80], rstatus[80];
+	int len = snprintf(status, sizeof(status), "%.20s - %d lines", K.filename ? K.filename : "[No Name]", K.numrows);
+	int rlen = snprintf(rstatus, sizeof(rstatus),"%d/%d", K.vy + 1, K.numrows);
+	if(len > K.screencols)
+		len = K.screencols;
+	abAppend(ab, status, len);
+	while (len < K.screencols){
+		if(K.screencols - len == rlen){
+			abAppend(ab, rstatus, rlen);
+			break;
+		}
+		else{
+			abAppend(ab, " ", 1);
+			len++;
+		}
+	
+	}
+	abApppend(ab, "\x1b[m", 3);
+}
 //
 //create a function to refresh screen
 //
@@ -379,6 +407,7 @@ void editorRefreshScreen(){
 	abAppend(&ab, "\x1b[H", 3);
 
 	editorDrawRows(&ab);
+	editorDrawStatusBar(&ab);
 	//
 	//this code will mave the cursor to the position sore in K.vx and K.vy
 	//
@@ -485,6 +514,9 @@ void initEditor(){
 	K.coloff = 0;
 	K.numrows = 0;
 	K.row = NULL;
+	K.filename = NULL;
+	K.statusmsg[0] = '\0';
+	K.statusmsg_time = 0;
 
 	if(getWindowSize(&K.screenrows, &K.screencols) == -1)
 		die("getWindowSize");
