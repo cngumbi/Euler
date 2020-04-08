@@ -354,6 +354,7 @@ void editorRefreshScreen(){
 //create a function for mappping keypressen to editor operations
 //
 void editorMoveCursor(int key){
+	erow *row = (K.vy >= K.numrows) ? NULL : &K.row[K.vy];
 	switch(key){
 		case ARROW_LEFT:
 			//preventing the cursor from mving off the screen
@@ -361,7 +362,8 @@ void editorMoveCursor(int key){
 				K.vx--;
 			break;
 		case ARROW_RIGHT:
-			K.vx++;
+			if(K.vy != 0)
+				K.vx++;
 			break;
 		case ARROW_UP:
 			if(K.vy != 0)
