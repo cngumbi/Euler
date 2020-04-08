@@ -46,7 +46,9 @@ enum editorKey{
 //this is a data type for storing a row of text in our editor
 typedef struct erow{
 	int size;
+	int rsize;
 	char *chars;
+	char *render;
 }erow;
 
 struct editorConfig{
@@ -214,6 +216,17 @@ int getWindowSize(int *rows, int *cols){
 //
 //********************ROW OPERATIONS*******************
 //
+void editorUpdateRow(erow *row){
+	free(row -> render);
+	row -> render = maloc(row->size +1);
+
+	int j;
+	int idx = 0;
+	for(j = 0; j < row->size; j++)
+		row->render[idx++] = row->chars[j];
+	row->render[idx] = '\0';
+	row->rsize = idx;
+}
 void editorAppendRow(char *s, size_t len){
 	K.row = realloc(K.row, sizeof(erow) * (K.numrows + 1));
 
@@ -222,6 +235,11 @@ void editorAppendRow(char *s, size_t len){
 	K.row[at].chars = malloc(len + 1);
 	memcpy(K.row[at].chars, s, len);
 	K.row[at].chars[len] = '\0';
+
+	K.row[at].rsize = 0;
+	K.row[at].render = NULL;
+	editorUpdateRow(&K.row[at]);
+
 	K.numrows++;
 }
 //********************FILE i/o*************************
@@ -308,12 +326,12 @@ void editorDrawRows(struct abuf *ab){
 				abAppend(ab, "~", 1);
 		}
 		else {
-			int len = K.row[filerow].size - K.coloff;
+			int len = K.row[filerow].rsize - K.coloff;
 			if(len < 0)
 				len = 0;
 			if(len > K.screencols)
 				len = K.screencols;
-			abAppend(ab, &K.row[filerow].chars[K.coloff], len);
+			abAppend(ab, &K.row[filerow].render[K.coloff], len);
 		}
 			abAppend(ab,"\x1b[K", 3);
 			if(y <K.screenrows - 1)
