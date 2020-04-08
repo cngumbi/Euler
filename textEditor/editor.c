@@ -233,7 +233,7 @@ void editorUpdateRow(erow *row){
 	int tabs = 0;
 	int j;
 	for (j = 0; j < row->size; j++)
-		if(rwo->chars[j] == '\t')
+		if(row->chars[j] == '\t')
 			tabs++;
 
 	free(row->render);
@@ -318,7 +318,9 @@ void abFree(struct abuf *ab){
 //create a function to draw a column of tidles(~)
 //
 void editorScroll(){
-	K.rx = K.vx;
+	K.rx = 0;
+	if(K.vy < K.numrows)
+		K.rx = editorRowCxToRx(&K.row[K.vy], K.vx);
 
 	if(K.vy < K.rowoff)
 		K.rowoff = K.vy;
@@ -362,8 +364,7 @@ void editorDrawRows(struct abuf *ab){
 			abAppend(ab, &K.row[filerow].render[K.coloff], len);
 		}
 			abAppend(ab,"\x1b[K", 3);
-			if(y <K.screenrows - 1)
-				abAppend(ab, "\r\n", 2);
+			abAppend(ab, "\r\n", 2);
 		}
 }
 //
@@ -449,10 +450,18 @@ void editorProcessKeypress(){
 			K.vx = 0;
 			break;
 		case END_KEY:
-			K.vx = K.screencols - 1;
+			if(K.vy < K.numrows)
+				K.vx = K.row[K.vy].size;
 		case PAGE_UP:
 		case PAGE_DOWN:
 			{
+				if(v == PAGE_UP)
+					K.vy = K.rowoff;
+				else if (v == PAGE_DOWN){
+					K.vy = K.rowoff + K.screenrows - 1;
+					if(K.vy > K.numrows)
+						K.vy = K.numrows;
+				}
 				int times = K.screenrows;
 				while(times--)
 					editorMoveCursor(v == PAGE_UP ? ARROW_UP : ARROW_DOWN);
@@ -479,6 +488,7 @@ void initEditor(){
 
 	if(getWindowSize(&K.screenrows, &K.screencols) == -1)
 		die("getWindowSize");
+	K.screenrows -= 1;
 }
 //
 //the main function
