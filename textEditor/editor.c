@@ -55,6 +55,7 @@ typedef struct erow{
 
 struct editorConfig{
 	int vx, vy;
+	int rx;
 	int rowoff;
 	int coloff;
 	int screenrows;
@@ -218,6 +219,16 @@ int getWindowSize(int *rows, int *cols){
 //
 //********************ROW OPERATIONS*******************
 //
+int editorRowCxToRx(erow *row, int vx){
+	int rx = 0;
+	int j;
+	for(j = 0; j < vx; j++){
+		if(row->chars[j] == '\t')
+			rx += (EDITOR_TAB_STOP - 1) - (rx % EDITOR_TAB_STOP);
+		rx++;
+	}
+	return rx;
+}
 void editorUpdateRow(erow *row){
 	int tabs = 0;
 	int j;
@@ -307,14 +318,16 @@ void abFree(struct abuf *ab){
 //create a function to draw a column of tidles(~)
 //
 void editorScroll(){
+	K.rx = K.vx;
+
 	if(K.vy < K.rowoff)
 		K.rowoff = K.vy;
 	if(K.vy >= K.rowoff + K.screenrows)
 		K.rowoff = K.vy - K.screenrows + 1;
-	if(K.vx < K.coloff)
-		K.coloff = K.vx;
-	if(K.vx >= K.coloff + K.screencols)
-		K.coloff = K.vx - K.screencols + 1;
+	if(K.rx < K.coloff)
+		K.coloff = K.rx;
+	if(K.rx >= K.coloff + K.screencols)
+		K.coloff = K.rx - K.screencols + 1;
 }
 void editorDrawRows(struct abuf *ab){
 	int y;
@@ -369,7 +382,7 @@ void editorRefreshScreen(){
 	//this code will mave the cursor to the position sore in K.vx and K.vy
 	//
 	char buf[32];
-	snprintf(buf, sizeof(buf), "\x1b[%d;%dH", (K.vy - K.rowoff) + 1, (K.vx - K.coloff) +1);
+	snprintf(buf, sizeof(buf), "\x1b[%d;%dH", (K.vy - K.rowoff) + 1, (K.rx - K.coloff) +1);
 	abAppend(&ab, buf, strlen(buf));
 	
 	//the code enable the cursor to appear after the refresh is over
@@ -458,6 +471,7 @@ void editorProcessKeypress(){
 void initEditor(){
 	K.vx = 0;
 	K.vy = 0;
+	K.rx = 0;
 	K.rowoff = 0;
 	K.coloff = 0;
 	K.numrows = 0;
