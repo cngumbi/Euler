@@ -65,7 +65,7 @@ struct editorConfig{
 	int numrows;
 	erow *row;
 	char *filename;
-	char statusmsg_time[80];
+	char statusmsg[80];
 	time_t statusmsg_time;
 	struct termios orig_termios;
 };
@@ -394,7 +394,16 @@ void editorDrawStatusBar(struct abuf *ab){
 		}
 	
 	}
-	abApppend(ab, "\x1b[m", 3);
+	abAppend(ab, "\x1b[m", 3);
+	abAppend(ab, "\r\n", 2);
+}
+void editorDrawMessageBar(struct abuf *ab){
+	abAppend(ab, "\x1b[K",3);
+	int msglen = strlen(K.statusmsg);
+	if(msglen > K.screencols)
+		msglen = K.screencols;
+	if(msglen && time(NULL) - K.statusmsg_time < 5)
+		abAppend(ab, K.statusmsg, msglen);
 }
 //
 //create a function to refresh screen
@@ -409,6 +418,7 @@ void editorRefreshScreen(){
 
 	editorDrawRows(&ab);
 	editorDrawStatusBar(&ab);
+	editorDrawMessageBar(&ab);
 	//
 	//this code will mave the cursor to the position sore in K.vx and K.vy
 	//
@@ -529,7 +539,7 @@ void initEditor(){
 
 	if(getWindowSize(&K.screenrows, &K.screencols) == -1)
 		die("getWindowSize");
-	K.screenrows -= 1;
+	K.screenrows -= 2;
 }
 //
 //the main function
@@ -541,7 +551,7 @@ int main(int argc, char *argv[])
 	if(argc >= 2)
 		editorOpen(argv[1]);
 
-	editorStatusMessage("HELP: Ctrl-Q = quit");
+	editorSetStatusMessage("HELP: Ctrl-Q = quit");
 
 	while(1){
 		editorRefreshScreen();
