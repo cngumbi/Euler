@@ -14,6 +14,7 @@
 #include <ctype.h>
 #include <errno.h>
 #include <stdio.h>
+#include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/ioctl.h>
@@ -423,6 +424,14 @@ void editorRefreshScreen(){
 	abFree(&ab);
 
 }
+
+void editorSetStatusMessage(const char *fmt, ...){
+	va_list ap;
+	va_start(ap, fmt);
+	vsnprintf(K.statusmsg, sizeof(K.statusmsg), fmt, ap);
+	va_end(ap);
+	K.statusmsg_time = time(NULL);
+}
 //
 //*********************INPUT***************************
 //
@@ -531,6 +540,8 @@ int main(int argc, char *argv[])
 	initEditor();
 	if(argc >= 2)
 		editorOpen(argv[1]);
+
+	editorStatusMessage("HELP: Ctrl-Q = quit");
 
 	while(1){
 		editorRefreshScreen();
