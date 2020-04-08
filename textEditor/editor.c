@@ -24,6 +24,8 @@
 //*******************DEFINE****************************
 //
 #define EDITOR_VERSION "0.0.1"
+#define EDITOR_TAB_STOP 8
+
 #define CTRL_KEY(k) ((k) & 0x1f)
 //
 //create an enum to store the arrow keys
@@ -217,15 +219,28 @@ int getWindowSize(int *rows, int *cols){
 //********************ROW OPERATIONS*******************
 //
 void editorUpdateRow(erow *row){
-	free(row -> render);
-	row -> render = maloc(row->size +1);
-
+	int tabs = 0;
 	int j;
+	for (j = 0; j < row->size; j++)
+		if(rwo->chars[j] == '\t')
+			tabs++;
+
+	free(row->render);
+	row->render = malloc(row->size + tabs*(EDITOR_TAB_STOP -1) +1);
+
 	int idx = 0;
-	for(j = 0; j < row->size; j++)
-		row->render[idx++] = row->chars[j];
+	for(j = 0; j < row->size; j++){
+		if(row->chars[j] == '\t'){
+			row->render[idx++] = ' ';
+			while(idx % EDITOR_TAB_STOP != 0)
+				row->render[idx++] = ' ';
+		}
+		else
+			row->render[idx++] = row->chars[j];
+	}
 	row->render[idx] = '\0';
 	row->rsize = idx;
+	
 }
 void editorAppendRow(char *s, size_t len){
 	K.row = realloc(K.row, sizeof(erow) * (K.numrows + 1));
