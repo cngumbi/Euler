@@ -45,7 +45,7 @@ Fl_Menu_Item	menuitems[] = {
 		{"&Find..",		FL_CTRL +'f', (Fl_Callback *)find_cd},
 		{"&Find Again",		FL_CTRL +'g', find2_cb},
 		{"&Replace..",		FL_CTRL +'r', replace_cb},
-		{"&Replace Again",	FL_CTRL + 't', replace@_cb},
+		{"&Replace Again",	FL_CTRL + 't', replace2_cb},
 		{0}
 	{0}
 };
