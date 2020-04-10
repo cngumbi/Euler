@@ -282,6 +282,16 @@ void editorRowInsertChar(erow *row, int at, int c){
 	row->chars[at] = c;
 	editorUpdateRow(row);
 }
+//
+//********************EDITOR OPERATION****************
+//
+void editorInsertChar(int c){
+	if(K.vy == K.numrows)
+		editorAppendRow("", 0);
+	editorRowInsertChar(&K.row[K.vy], K.vx, c);
+	K.vx++;
+}
+//
 //********************FILE i/o*************************
 //
 void editorOpen(char *filename){
