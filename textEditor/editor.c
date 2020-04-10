@@ -73,6 +73,10 @@ struct editorConfig{
 };
 struct editorConfig K;
 //
+//*********************PROTOTYPES**************************
+//
+void editorSetStatusMessage(const char *fmt, ...);
+//
 //error handling create a die() function that will print an error message and exits the program
 //********************TERMINAL*****************************
 void die(const char *s){
@@ -342,9 +346,18 @@ void editorSave(){
 	char *buf = editorRowToString(&len);
 
 	int fb = open(K.filename, O_RDWR | O_CREAT, 0644);
-	ftruncate(fb, len);
-	write(fb, buf, len);
-	close(fb);
+	if(fb != -1){
+		if(ftruncate(fb, len) != -1){
+			if(write(fb, buf, len) == len){
+				close(fb);
+				free(buf);
+				editorSetStatusMessage("%d bytes written to disk", len);
+				return;
+			}
+		}
+		close(fb);
+	}
+
 	free(buf);
 }
 //*********************APPEND BUFFER*******************
@@ -545,10 +558,14 @@ void editorProcessKeypress(){
 			//TODO
 			 break;
 
-		case CTRL_KEY('Q'):
+		case CTRL_KEY('q'):
 			write(STDOUT_FILENO,"\x1b[2J",4);
 			write(STDOUT_FILENO,"\x1b[H",3);
 			exit(0);
+			break;
+
+		case CTRL_KEY('s'):
+			editorSave();
 			break;
 
 		case HOME_KEY:
@@ -627,7 +644,7 @@ int main(int argc, char *argv[])
 	if(argc >= 2)
 		editorOpen(argv[1]);
 
-	editorSetStatusMessage("HELP: Ctrl-Q = quit");
+	editorSetStatusMessage("HELP: Ctrl-S = save | Ctrl-Q = quit");
 
 	while(1){
 		editorRefreshScreen();
