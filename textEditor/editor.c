@@ -539,6 +539,10 @@ void editorProcessKeypress(){
 		case ARROW_RIGHT:
 			editorMoveCursor(v);
 			break;
+
+		default:
+			editorInsertChar(v);
+			break;
 	}
 }
 //
