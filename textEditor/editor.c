@@ -28,6 +28,7 @@
 //
 #define EDITOR_VERSION "0.0.1"
 #define EDITOR_TAB_STOP 8
+#define EDITOR_QUIT_TIMES 3
 
 #define CTRL_KEY(k) ((k) & 0x1f)
 //
@@ -66,6 +67,7 @@ struct editorConfig{
 	int screencols;
 	int numrows;
 	erow *row;
+	int dirty;
 	char *filename;
 	char statusmsg[80];
 	time_t statusmsg_time;
@@ -278,6 +280,7 @@ void editorAppendRow(char *s, size_t len){
 	editorUpdateRow(&K.row[at]);
 
 	K.numrows++;
+	K.dirty++;
 }
 void editorRowInsertChar(erow *row, int at, int c){
 	if(at <0 || at >row->size)
@@ -287,6 +290,7 @@ void editorRowInsertChar(erow *row, int at, int c){
 	row->size++;
 	row->chars[at] = c;
 	editorUpdateRow(row);
+	K.dirty++;
 }
 //
 //********************EDITOR OPERATION****************
@@ -337,13 +341,14 @@ void editorOpen(char *filename){
 	}
 	free(line);
 	fclose(fp);
+	K.dirty = 0;
 }
 void editorSave(){
 	if(K.filename == NULL)
 		return;
 
 	int len;
-	char *buf = editorRowToString(&len);
+	char *buf = editorRowsToString(&len);
 
 	int fb = open(K.filename, O_RDWR | O_CREAT, 0644);
 	if(fb != -1){
@@ -351,6 +356,7 @@ void editorSave(){
 			if(write(fb, buf, len) == len){
 				close(fb);
 				free(buf);
+				K.dirty = 0;
 				editorSetStatusMessage("%d bytes written to disk", len);
 				return;
 			}
@@ -443,7 +449,7 @@ void editorDrawRows(struct abuf *ab){
 void editorDrawStatusBar(struct abuf *ab){
 	abAppend(ab, "\x1b[7m", 4);
 	char status[80], rstatus[80];
-	int len = snprintf(status, sizeof(status), "%.20s - %d lines", K.filename ? K.filename : "[No Name]", K.numrows);
+	int len = snprintf(status, sizeof(status), "%.20s - %d lines", K.filename ? K.filename : "[No Name]", K.numrows, K.dirty ? "(modified)" : "");
 	int rlen = snprintf(rstatus, sizeof(rstatus),"%d/%d", K.vy + 1, K.numrows);
 	if(len > K.screencols)
 		len = K.screencols;
@@ -551,6 +557,8 @@ void editorMoveCursor(int key){
 		K.vx = rowlen;
 }
 void editorProcessKeypress(){
+	static int quit_times = EDITOR_QUIT_TIMES;
+
 	int v = editorReadKey();
 
 	switch(v){
@@ -559,10 +567,15 @@ void editorProcessKeypress(){
 			 break;
 
 		case CTRL_KEY('q'):
-			write(STDOUT_FILENO,"\x1b[2J",4);
-			write(STDOUT_FILENO,"\x1b[H",3);
-			exit(0);
-			break;
+			 if(K.dirty && quit_times > 0){
+				 editorSetStatusMessage("WARNING!!! File has unsaved chages." "Press Ctrl-Q %d more times to quit.", quit_times);
+				 quit_times--;
+				 return;
+			 }
+			 write(STDOUT_FILENO,"\x1b[2J",4);
+			 write(STDOUT_FILENO,"\x1b[H",3);
+			 exit(0);
+			 break;
 
 		case CTRL_KEY('s'):
 			editorSave();
@@ -614,6 +627,8 @@ void editorProcessKeypress(){
 			editorInsertChar(v);
 			break;
 	}
+
+	quit_times = EDITOR_QUIT_TIMES;
 }
 //
 //*********************INIT****************************
@@ -626,6 +641,7 @@ void initEditor(){
 	K.coloff = 0;
 	K.numrows = 0;
 	K.row = NULL;
+	K.dirty = 0;
 	K.filename = NULL;
 	K.statusmsg[0] = '\0';
 	K.statusmsg_time = 0;
