@@ -234,7 +234,7 @@ int getWindowSize(int *rows, int *cols){
 //
 //********************ROW OPERATIONS*******************
 //
-int editorRowCxToRx(erow *row, int vx){
+int editorRowVxToRx(erow *row, int vx){
 	int rx = 0;
 	int j;
 	for(j = 0; j < vx; j++){
@@ -243,6 +243,19 @@ int editorRowCxToRx(erow *row, int vx){
 		rx++;
 	}
 	return rx;
+}
+int editorRowRxToVx(erow *row, int rx){
+	int cur_rx = 0;
+	int vx;
+	for(vx = 0; vx < row->size; vx++){
+		if(row->chars[vx] == '\t')
+			cur_rx += (EDITOR_TAB_STOP - 1) - (cur_rx % EDITOR_TAB_STOP);
+		cur_rx++;
+
+		if(cur_rx > rx) 
+			return vx;
+	}
+	return vx;
 }
 void editorUpdateRow(erow *row){
 	int tabs = 0;
