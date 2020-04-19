@@ -462,7 +462,7 @@ void editorFind(){
 		char *match = strstr(row->render, query);
 		if(match){
 			K.vy = i;
-			K.vx = match - row->render;
+			K.vx =editorRowRxToVx(row, match - row->render);
 			K.rowoff = K.numrows;
 			break;
 		}
@@ -503,7 +503,7 @@ void abFree(struct abuf *ab){
 void editorScroll(){
 	K.rx = 0;
 	if(K.vy < K.numrows)
-		K.rx = editorRowCxToRx(&K.row[K.vy], K.vx);
+		K.rx = editorRowVxToRx(&K.row[K.vy], K.vx);
 
 	if(K.vy < K.rowoff)
 		K.rowoff = K.vy;
@@ -728,6 +728,10 @@ void editorProcessKeypress(){
 		case END_KEY:
 			if(K.vy < K.numrows)
 				K.vx = K.row[K.vy].size;
+			break;
+
+		case CTRL_KEY('f'):
+			editorFind();
 			break;
 
 		case BACKSPACE:
