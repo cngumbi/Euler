@@ -28,7 +28,7 @@ int main(int agrc, char *agrv[])
 
     //inputing the choice
 
-    printf("Choose an Index \n");
+start: printf("Choose an Index \n");
     scanf("%d", &index);
     getchar();
     system("clear");
@@ -41,6 +41,7 @@ int main(int agrc, char *agrv[])
         enter(value);
         //function call multiple of 3 and 5
         multiple_3_5(value);
+	goto start;
         break;
     case 2:
         enter(value);
