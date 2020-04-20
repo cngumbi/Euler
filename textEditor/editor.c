@@ -252,6 +252,15 @@ void editotUpdateSyntax(erow *row){
 		}
 	}
 }
+int editorSyntaxToColor(int hl){
+	switch(hl){
+		case HL_NUMBER:
+			return 31;
+
+		default:
+			return 37;
+	}
+}
 //
 //********************ROW OPERATIONS*******************
 //
@@ -607,16 +616,28 @@ void editorDrawRows(struct abuf *ab){
 			if(len > K.screencols)
 				len = K.screencols;
 			char *c = &K.row[filerow].render[K.coloff];
+			unsigned char *hl = &K.row[filerow].hl[K.coloff];
+			int current_color = -1;
 			int j;
 			for (j = 0; j < len; j++){
-				if(isdigit(c[j])){
-					abAppend(ab, "\x1b[31m", 5);
+				if(hl[j] == HL_NORMAL){
+					if(current_color != -1){
+						abAppend(ab, "\x1b[31m", 5);
+						current_color = -1;
+					}
 					abAppend(ab, &c[j], 1);
-					abAppend(ab, "\x1b[39m", 5);
 				}else{
+					int color = editorSyntaxToColor(hl[j]);
+					if(color != current_color){
+						current_color = color;
+						char buf[16];
+						int clen = snprintf(buf, sizeof(buf), "\x1b[%dm", color);
+						adAppend(ab, buf, clen);
+					}
 					abAppend(ab, &c[j], 1);
 				}
 			}
+			abAppend(ab, "\X1b[39m", 5);
 		}
 			abAppend(ab,"\x1b[K", 3);
 			abAppend(ab, "\r\n", 2);
