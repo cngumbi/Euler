@@ -241,9 +241,9 @@ int getWindowSize(int *rows, int *cols){
 //
 //********************SYNTAX HIGHLIGHTING**************
 //
-void editotUpdateSyntax(erow *row){
-	row->bl = realloc(row->hl, row->rsize);
-	memset(row->hl, HL_NORMAL, ro->rsize);
+void editorUpdateSyntax(erow *row){
+	row->hl = realloc(row->hl, row->rsize);
+	memset(row->hl, HL_NORMAL, row->rsize);
 
 	int i;
 	for(i = 0; i < row->rsize; i++){
@@ -622,7 +622,7 @@ void editorDrawRows(struct abuf *ab){
 			for (j = 0; j < len; j++){
 				if(hl[j] == HL_NORMAL){
 					if(current_color != -1){
-						abAppend(ab, "\x1b[31m", 5);
+						abAppend(ab, "\x1b[39m", 5);
 						current_color = -1;
 					}
 					abAppend(ab, &c[j], 1);
@@ -632,12 +632,12 @@ void editorDrawRows(struct abuf *ab){
 						current_color = color;
 						char buf[16];
 						int clen = snprintf(buf, sizeof(buf), "\x1b[%dm", color);
-						adAppend(ab, buf, clen);
+						abAppend(ab, buf, clen);
 					}
 					abAppend(ab, &c[j], 1);
 				}
 			}
-			abAppend(ab, "\X1b[39m", 5);
+			abAppend(ab, "\x1b[39m", 5);
 		}
 			abAppend(ab,"\x1b[K", 3);
 			abAppend(ab, "\r\n", 2);
