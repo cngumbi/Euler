@@ -46,6 +46,10 @@ enum editorKey{
 	PAGE_UP,
 	PAGE_DOWN
 };
+enum editorHighlight{
+	HL_NORMAL = 0,
+	HL_NUMBER
+};
 //
 //*******************DATA*******************************
 //
@@ -56,6 +60,8 @@ typedef struct erow{
 	int rsize;
 	char *chars;
 	char *render;
+	unsigned char *hl; // hl stands for highlight
+
 }erow;
 
 struct editorConfig{
@@ -233,6 +239,20 @@ int getWindowSize(int *rows, int *cols){
 	}
 }
 //
+//********************SYNTAX HIGHLIGHTING**************
+//
+void editotUpdateSyntax(erow *row){
+	row->bl = realloc(row->hl, row->rsize);
+	memset(row->hl, HL_NORMAL, ro->rsize);
+
+	int i;
+	for(i = 0; i < row->rsize; i++){
+		if(isdigit(row->render[i])){
+			row->hl[i] = HL_NUMBER;
+		}
+	}
+}
+//
 //********************ROW OPERATIONS*******************
 //
 int editorRowVxToRx(erow *row, int vx){
@@ -296,6 +316,7 @@ void editorInsertRow(int at, char *s, size_t len){
 
 	K.row[at].rsize = 0;
 	K.row[at].render = NULL;
+	K.row[at].hl = NULL;
 	editorUpdateRow(&K.row[at]);
 
 	K.numrows++;
@@ -304,6 +325,7 @@ void editorInsertRow(int at, char *s, size_t len){
 void editorFreeRow(erow *row){
 	free(row->render);
 	free(row->chars);
+	free(row->hl);
 }
 void editorDelRow( int at){
 	if(at < 0 || at >= K.numrows)
@@ -453,15 +475,39 @@ void editorSave(){
 //*********************FIND**************************
 //
 void editorFindCallback(char *query, int key){
-	if(key == '\r' || key == '\x1b')
-		return;
+	static int last_match = -1;
+	static int direction = 1;
 
+	if(key == '\r' || key == '\x1b'){
+		last_match = -1;
+		direction = 1;
+		return;
+	}else if(key == ARROW_RIGHT || key == ARROW_DOWN){
+		direction = 1;
+	}else if(key == ARROW_LEFT || key == ARROW_UP){
+		direction = -1;
+	}else{
+		last_match = -1;
+		direction = 1;
+	}
+
+	if (last_match == -1)
+		direction =1;
+
+	int current = last_match;
 	int i;
 	for(i = 0; 1 < K.numrows; i++){
-		erow *row = &K.row[i];
+		current += direction;
+		if(current == -1)
+			current = K.numrows - 1;
+		else if(current == K.numrows)
+			current = 0;
+
+		erow *row = &K.row[current];
 		char *match = strstr(row->render, query);
 		if(match){
-			K.vy = i;
+			last_match = current;
+			K.vy = current;
 			K.vx =editorRowRxToVx(row, match - row->render);
 			K.rowoff = K.numrows;
 			break;
@@ -469,9 +515,20 @@ void editorFindCallback(char *query, int key){
 	}
 }
 void editorFind(){
-	char *query = editorPrompt("Search: %s (ESC to cancel)", NULL);
-	if(query)
+	int saved_vx = K.vx;
+	int saved_vy = K.vy;
+	int saved_coloff = K.coloff;
+	int saved_rowoff = K.rowoff;
+
+	char *query = editorPrompt("Search: %s (Use ESC/Arrows/Enter)", editorFindCallback);
+	if(query){
 		free(query);
+	}else{
+		K.vx = saved_vx;
+		K.vy = saved_vy;
+		K.coloff = saved_coloff;
+		K.rowoff = saved_rowoff;
+	}
 }
 //
 //*********************APPEND BUFFER*******************
@@ -547,7 +604,17 @@ void editorDrawRows(struct abuf *ab){
 				len = 0;
 			if(len > K.screencols)
 				len = K.screencols;
-			abAppend(ab, &K.row[filerow].render[K.coloff], len);
+			char *c = &K.row[filerow].render[K.coloff];
+			int j;
+			for (j = 0; j < len; j++){
+				if(isdigit(c[j])){
+					abAppend(ab, "\x1b[31m", 5);
+					abAppend(ab, &c[j], 1);
+					abAppend(ab, "\x1b[39m", 5);
+				}else{
+					abAppend(ab, &c[j], 1);
+				}
+			}
 		}
 			abAppend(ab,"\x1b[K", 3);
 			abAppend(ab, "\r\n", 2);
