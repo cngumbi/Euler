@@ -243,7 +243,7 @@ int getWindowSize(int *rows, int *cols){
 //********************SYNTAX HIGHLIGHTING**************
 //
 int is_separator(int v){
-	return isspace(v) || v == '\0' || strchr(",.()+-/*=~%<>[];", v != NULL;
+	return isspace(v) || v == '\0' || strchr(",.()+-/*=~%<>[];", v) != NULL;
 }
 
 void editorUpdateSyntax(erow *row){
@@ -261,7 +261,7 @@ void editorUpdateSyntax(erow *row){
 			row->hl[i] = HL_NUMBER;
 			i++;
 			prev_sep = 0;
-			countinue;
+			continue;
 		}
 
 		prev_sep = is_separator(c);
