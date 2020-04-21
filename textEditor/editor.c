@@ -48,7 +48,8 @@ enum editorKey{
 };
 enum editorHighlight{
 	HL_NORMAL = 0,
-	HL_NUMBER
+	HL_NUMBER,
+	HL_MATCH
 };
 //
 //*******************DATA*******************************
@@ -256,6 +257,9 @@ int editorSyntaxToColor(int hl){
 	switch(hl){
 		case HL_NUMBER:
 			return 31;
+
+		case HL_MATCH:
+			return 34;
 
 		default:
 			return 37;
@@ -521,6 +525,8 @@ void editorFindCallback(char *query, int key){
 			K.vy = current;
 			K.vx =editorRowRxToVx(row, match - row->render);
 			K.rowoff = K.numrows;
+
+			memset(&row->hl[match - row->render], HL_MATCH, strlen(query));
 			break;
 		}
 	}
