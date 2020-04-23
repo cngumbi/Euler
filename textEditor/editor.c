@@ -63,7 +63,7 @@ enum editorHighlight{
 //this is a data type for storing a row of text in our editor
 //
 struct editorSyntax{
-	char *filetypr;
+	char *filetype;
 	char **filematch;
 	char *singleline_comment_start;
 	int flags;
@@ -102,9 +102,9 @@ char *C_HL_extentions[] = {".c", ".h", ".cpp", NULL};
 struct editorSyntax HLDB[] = {
 	{
 		"c",
-		C_HL_extensions,
+		C_HL_extentions,
 		"//",
-		HL_HIGHLIGHT_NUMBER | HL_HIGHLIGHT_STRINGS
+		HL_HIGHLIGHT_NUMBERS | HL_HIGHLIGHT_STRINGS
 	},
 };
 //*********************PROTOTYPES**************************
@@ -277,7 +277,7 @@ void editorUpdateSyntax(erow *row){
 
 	if(K.syntax == NULL)
 		return;
-	char *scs = K.syntax->singleline_commit_start;
+	char *scs = K.syntax->singleline_comment_start;
 	int scs_len = scs ? strlen(scs) : 0;
 
 	int prev_sep = 1;
@@ -295,7 +295,7 @@ void editorUpdateSyntax(erow *row){
 			}
 		}
 
-		if(K.syntax->flag & HL_HIGHLIGHT_STRINGS){
+		if(K.syntax->flags & HL_HIGHLIGHT_STRINGS){
 			if(in_string){
 				row->hl[i] = HL_STRING;
 				if(c == '\\' && i+ 1 < row->rsize){
@@ -309,7 +309,7 @@ void editorUpdateSyntax(erow *row){
 				prev_sep = 1;
 				continue;
 			}else{
-				if(c =='"' || c == '\'){
+				if(c =='"' || c == ' \ '){
 					in_string = c;
 					row->hl[i] = HL_STRING;
 					i++;
@@ -318,7 +318,7 @@ void editorUpdateSyntax(erow *row){
 			}
 		}
 
-		if(K.syntax->flags & HL_HIGHLIGHT_NUMBER){
+		if(K.syntax->flags & HL_HIGHLIGHT_NUMBERS){
 			if((isdigit(c) && (prev_sep || prev_hl == HL_NUMBER)) || ( c == '.' && prev_hl == HL_NUMBER)){
 				row->hl[i] = HL_NUMBER;
 				i++;
@@ -365,6 +365,7 @@ void editorSelectSyntaxHighlight(){
 				int filerow;
 				for(filerow = 0; filerow < K.numrows; filerow++){
 					editorUpdateSyntax(&K.row[filerow]);
+				}
 				return;
 			}
 			i++;
