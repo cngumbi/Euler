@@ -21,14 +21,17 @@ int main(int agrc, char *agrv[])
 
     //creating the printf statements
     
-    printf("Index \t Statement\n");
+start:printf("Index \t Statement\n");
     printf("1 \t Multiple of Three and Five \n");
     printf("2 \t Even Fibonacci numbers\n");
     printf("3 \t Convert FAHRENHEITS to CELSIUS\n\n");
 
+    //choice if to exit
+    printf("0 \t To exit\n");
+
     //inputing the choice
 
-start: printf("Choose an Index \n");
+    printf("Choose an Index \n");
     scanf("%d", &index);
     getchar();
     system("clear");
@@ -47,13 +50,17 @@ start: printf("Choose an Index \n");
         enter(value);
         //function call even fibonacci
         even_fibonacci(value);
+	goto start;
         break;
     case 3:
 	fahrenhiets();
         //enter(value);
         //function to calculate large prime factor
        // printf("Large prime factor %d\n",large_prime_factor(value));
+       goto start;
        break;
+     case 0:
+        exit(0);
 
     default:
         break;
