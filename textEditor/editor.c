@@ -1,7 +1,7 @@
 //
 //this project is to create a text editor
-//author: cngumbi
-//version: 1.0.0
+//author: softcraze corporation
+//version: 1.0.1
 //
 //*******************INCLUDES************************
 //
@@ -26,7 +26,7 @@
 //
 //*******************DEFINE****************************
 //
-#define EDITOR_VERSION "0.0.1"
+#define EDITOR_VERSION "1.0.1"
 #define EDITOR_TAB_STOP 8
 #define EDITOR_QUIT_TIMES 3
 
