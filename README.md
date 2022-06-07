@@ -1,2 +1,0 @@
-# dataStructures
-simple Data Stractures
