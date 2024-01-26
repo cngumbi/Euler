@@ -2,6 +2,11 @@
 //of the main program after then create header files to 
 //splite the function and save them for letter use in 
 //the program.
+//to test the uses of some operaters
+//# is the same as %:
+//[] is the same as <::>
+//{} is the same as <%%>
+// now lets see the 
 //all the function created are a copyright of my designs
 // author : Wambua C. Ngumbi
 //Year: 2020
