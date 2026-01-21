@@ -148,7 +148,8 @@ void editorRefreshScreen(){
 	//the code enable the cursor to appear after the refresh is over
 	abAppend(&ab, "\x1b[?25h", 6);
 
-	write(STDOUT_FILENO, ab.b, ab.len);
+	//write(STDOUT_FILENO, ab.b, ab.len);
+	write_all(STDOUT_FILENO, ab.b, ab.len);
 	//free the memory alocation using the destractor
 	abFree(&ab);
 
@@ -262,8 +263,10 @@ void editorProcessKeypress(){
 				 quit_times--;
 				 return;
 			 }
-			 write(STDOUT_FILENO,"\x1b[2J",4);
-			 write(STDOUT_FILENO,"\x1b[H",3);
+			 //write(STDOUT_FILENO,"\x1b[2J",4);
+			 write_all(STDOUT_FILENO, "\x1b[2J",4);
+			 //write(STDOUT_FILENO,"\x1b[H",3);
+			 write_all(STDOUT_FILENO, "\x1b[H", 3); 
 			 exit(0);
 			 break;
 

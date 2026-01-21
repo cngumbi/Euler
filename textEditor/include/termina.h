@@ -6,11 +6,30 @@
 //
 //error handling create a die() function that will print an error message and exits the program
 //********************TERMINAL*****************************
+//
+//robust and idiomatic handing of the write() function
+//
+static void write_all(int fd, const char *buf, size_t len){
+	while(len > 0){
+		ssize_t n = write(fd, buf, len);
+		if(n == -1){
+			if (errno ==EINTR) continue;
+
+			perror("write");
+			return;
+		}
+		buf += n;
+		len -= n;
+	}
+}
 void die(const char *s){
 	//clear the screen and reposition the cursor when program exits
-	write(STDOUT_FILENO, "\x1b[2J]", 4);
-	write(STDOUT_FILENO, "\x1b[H", 3);
-	perror(s);
+	//write(STDOUT_FILENO, "\x1b[2J]", 4);
+	write_all(STDOUT_FILENO, "\x1b[2J", 4);
+	//write(STDOUT_FILENO, "\x1b[H", 3);
+	write_all(STDOUT_FILENO, "\x1b[H", 3);
+	//perror(s);
+	fprintf(stderr, "%s\n", s);
 	exit(1);
 }
 
