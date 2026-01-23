@@ -29,7 +29,7 @@ void editorDrawRows(struct abuf *ab){
 		int filerow = y + K.rowoff;
 		if(filerow >= K.numrows){
 			if (K.numrows == 0 && y == K.screenrows / 3){
-				//write welcme massage
+				//write welcome massage
 				char welcome[80];
 				int welcomelen = snprintf(welcome, sizeof(welcome), " Editor --version %s", EDITOR_VERSION);
 				if(welcomelen > K.screencols)
@@ -132,14 +132,14 @@ void editorRefreshScreen(){
 	struct abuf ab = ABUF_INIT;
 	//this code hides the cursor before refreshing the screen
 	abAppend(&ab, "\x1b[?25l", 6);
-	//this lineof code repositions the cursor to the top-left corner of the screen
+	//this line of code repositions the cursor to the top-left corner of the screen
 	abAppend(&ab, "\x1b[H", 3);
 
 	editorDrawRows(&ab);
 	editorDrawStatusBar(&ab);
 	editorDrawMessageBar(&ab);
 	//
-	//this code will mave the cursor to the position sore in K.vx and K.vy
+	//this code will move the cursor to the position sore in K.vx and K.vy
 	//
 	char buf[32];
 	snprintf(buf, sizeof(buf), "\x1b[%d;%dH", (K.vy - K.rowoff) + 1, (K.rx - K.coloff) +1);
@@ -346,8 +346,7 @@ void initEditor(){
 	K.statusmsg_time = 0;
 	K.syntax = NULL;
 
-	if(getWindowSize(&K.screenrows, &K.screencols) == -1)
-		die("getWindowSize");
+	if(getWindowSize(&K.screenrows, &K.screencols) == -1) die("getWindowSize");
 	K.screenrows -= 2;
 }
 

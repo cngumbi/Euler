@@ -3,12 +3,13 @@
 
 #include "filetype.h"
 
-//
-//error handling create a die() function that will print an error message and exits the program
 //********************TERMINAL*****************************
+//----------------------------------------------------------------------------------------------
+//error handling create a die() function that will print an error message and exits the program
 //
 //robust and idiomatic handing of the write() function
 //
+//---------------------------------------------------------------------------
 static void write_all(int fd, const char *buf, size_t len){
 	while(len > 0){
 		ssize_t n = write(fd, buf, len);
@@ -32,19 +33,21 @@ void die(const char *s){
 	fprintf(stderr, "%s\n", s);
 	exit(1);
 }
-
+//-----------------------------------------------------------------------
+//Function to disable raw mode and restore terminal's original attributes
+//-----------------------------------------------------------------------
 void disableRawMode(){
-	if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &K.orig_termios) == -1)
-		die("tcsetattr");
+	if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &K.orig_termios) == -1) die("tcsetattr");
 }
 
 void enableRawMode(){
 
-	if (tcgetattr(STDIN_FILENO, &K.orig_termios) == -1)
-		die("tcgetattr");
+	//get the current terminal settings
+	if (tcgetattr(STDIN_FILENO, &K.orig_termios) == -1) die("tcgetattr");
 
 	atexit(disableRawMode);
 
+	//Copy the settings
 	struct termios raw = K.orig_termios;
 	//
 	//turn off some flags
@@ -52,15 +55,15 @@ void enableRawMode(){
 	raw.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON);
 	raw.c_oflag &= ~(OPOST);
 	raw.c_cflag |=(CS8);
-	raw.c_lflag &= ~(ECHO | ICANON | IEXTEN | ISIG);
+	raw.c_lflag &= ~(ECHO | ICANON | IEXTEN | ISIG); //unset the ICANON, ECHO, IEXTEN and ISIG flags
 	//
-	//set time out
+	//set timeout
 	//
 	raw.c_cc[VMIN] = 0;
 	raw.c_cc[VTIME] = 1;
 
-	if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw) == -1)
-		die("tcsetattr");
+	//set the new terminal settings
+	if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw) == -1) die("tcsetattr");
 }
 //
 //create a function to read low level keypress
@@ -68,20 +71,16 @@ void enableRawMode(){
 int editorReadKey(){
 	int nread;
 	char v;
-	while((nread = read(STDIN_FILENO, &v, 1)) != 1)
-		if(nread == -1 && errno != EAGAIN)
-			die("read");
+	while((nread = read(STDIN_FILENO, &v, 1)) != 1){
+		if(nread == -1 && errno != EAGAIN) die("read");
+	}
 	if (v == '\x1b'){
 		char seq[3];
-		if(read(STDIN_FILENO, &seq[0], 1) != 1)
-			return '\x1b';
-		if(read(STDIN_FILENO, &seq[1], 1) != 1)
-			return '\x1b';
-
+		if(read(STDIN_FILENO, &seq[0], 1) != 1) return '\x1b';
+		if(read(STDIN_FILENO, &seq[1], 1) != 1) return '\x1b';
 		if(seq[0] == '['){
 			if(seq[1] >= '0' && seq[1] <= '9'){
-				if(read(STDIN_FILENO, &seq[2], 1) != 1)
-					return '\x1b';
+				if(read(STDIN_FILENO, &seq[2], 1) != 1) return '\x1b';
 				if(seq[2] == '~'){
 					switch(seq[1]){
 						case '1':
@@ -126,7 +125,6 @@ int editorReadKey(){
 					return END_KEY;
 			}
 		}
-
 		return '\x1b';
 	}
 	else
@@ -163,8 +161,7 @@ int getWindowSize(int *rows, int *cols){
 	struct winsize ws;
 
 	if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws) == -1 || ws.ws_col == 0){
-		if (write(STDOUT_FILENO, "\x1b[999C\x1b[999B", 12) != 12)
-			return -1;
+		if (write(STDOUT_FILENO, "\x1b[999C\x1b[999B", 12) != 12) return -1;
 		return getCursorPosition(rows, cols);
 	}
 	else{

@@ -1,7 +1,7 @@
 //
 //this project is to create a text editor
 //author: cngumbi
-//version: 1.10.1
+//version: 1.0.11
 //
 #include "io.h"
 //

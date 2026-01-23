@@ -7,7 +7,7 @@ BINDIR := $(PREFIX)/bin
 #--------------------------------------------
 #---------Environment Configaration----------
 #--------------------------------------------
--include .env
+#-include .env
 #--------------------------------------------
 #----Project Directories Configaration-------
 #--------------------------------------------
@@ -27,11 +27,11 @@ LIBS      :=-lm
 #--------------------------------------------
 #------Custom Cflags (raylib configuration---
 #---------------------------i----------------
-RAYLIBS_CFLAGS := $(shell pkg-config --cflags raylib)
-RAYLIBS_LIBS    := $(shell pkg-config --libs raylib)
+#RAYLIBS_CFLAGS := $(shell pkg-config --cflags raylib)
+#RAYLIBS_LIBS    := $(shell pkg-config --libs raylib)
 
-CFLAGS += $(RAYLIBS_CFLAGS)
-LIBS   += $(RAYLIBS_LIBS)
+#CFLAGS += $(RAYLIBS_CFLAGS)
+#LIBS   += $(RAYLIBS_LIBS)
 
 #------------------------------------------
 #----------Building modes------------------
@@ -124,27 +124,3 @@ install: $(OUTDIR)/$(TARGET)
 uninstall:
 	@echo "removing $(TARGET) from $(BINDIR)"
 	rm -f $(DESTDIR)$(BINDIR)/$(TARGET)
-
-
-#--------------------------------------------
-#_DEPS=lib.h struct.h filetype.h termina.h reopt.h fileio.h io.h
-#DEPS= $(patsubst %,$(I_DIR)/%,$(_DEPS))
-
-#_OBJ = index.o
-#OBJ= $(patsubst %,$(O_DIR)/%,$(_OBJ))
-
-#$(O_DIR)/%.o: $(SRC_DIR)/%.c $(DEPS)
-#	$(CC) -c -o $@ $< $(CFLAGS) 
-
-#$(APP)/$(TARGET): $(OBJ)
-#	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
-
-#clean Up the created files
-#.PHONY: clean
-
-#clean:
-#	rm -f $(O_DIR)/*.o *~ $(APP)/$(TARGET) $(INCDIR)/*~
-
-#run:
-#	./build/Kichwa
-
