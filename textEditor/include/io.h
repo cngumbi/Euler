@@ -31,16 +31,14 @@ void editorDrawRows(struct abuf *ab){
 			if (K.numrows == 0 && y == K.screenrows / 3){
 				//write welcome massage
 				char welcome[80];
-				int welcomelen = snprintf(welcome, sizeof(welcome), " Editor --version %s", EDITOR_VERSION);
-				if(welcomelen > K.screencols)
-					welcomelen = K.screencols;
+				int welcomelen = snprintf(welcome, sizeof(welcome), "Kichwa Editor --version %s", EDITOR_VERSION);
+				if(welcomelen > K.screencols) welcomelen = K.screencols;
 				int padding = (K.screencols - welcomelen) / 2;
 				if(padding){
 					abAppend(ab, "~", 1);
 					padding--;
 				}
-				while(padding--)
-					abAppend(ab, " ", 1);
+				while(padding--) abAppend(ab, " ", 1);
 	
 				abAppend(ab, welcome, welcomelen);
 			}
@@ -89,7 +87,7 @@ void editorDrawRows(struct abuf *ab){
 			}
 			abAppend(ab, "\x1b[39m", 5);
 		}
-			abAppend(ab,"\x1b[K", 3);
+			abAppend(ab,"\x1b[K", 3);  //this erases on line at atime before refresh
 			abAppend(ab, "\r\n", 2);
 		}
 }
@@ -214,14 +212,14 @@ void editorMoveCursor(int key){
 	erow *row = (K.vy >= K.numrows) ? NULL : &K.row[K.vy];
 	switch(key){
 		case ARROW_LEFT:
-			//preventing the cursor from mving off the screen
+			//preventing the cursor from moving off the screen
 			if(K.vx != 0){
 				K.vx--;
 			}
-			else if(K.vy > 0){
-				K.vy--;
-				K.vx = K.row[K.vy].size;
-			}
+			//else if(K.vy > 0){
+			//	K.vy--;
+			//	K.vx = K.row[K.vy].size;
+			//}
 			break;
 		case ARROW_RIGHT:
 			if(K.vy != 0){
@@ -279,8 +277,7 @@ void editorProcessKeypress(){
 			break;
 
 		case END_KEY:
-			if(K.vy < K.numrows)
-				K.vx = K.row[K.vy].size;
+			if(K.vy < K.numrows) K.vx = K.row[K.vy].size;
 			break;
 
 		case CTRL_KEY('f'):
@@ -298,8 +295,7 @@ void editorProcessKeypress(){
 		case PAGE_UP:
 		case PAGE_DOWN:
 			{
-				if(v == PAGE_UP)
-					K.vy = K.rowoff;
+				if(v == PAGE_UP) K.vy = K.rowoff;
 				else if (v == PAGE_DOWN){
 					K.vy = K.rowoff + K.screenrows - 1;
 					if(K.vy > K.numrows)
@@ -333,8 +329,8 @@ void editorProcessKeypress(){
 //*********************INIT****************************
 //
 void initEditor(){
-	K.vx = 0;
-	K.vy = 0;
+	K.vx = 0;        //Horizontal Coordinates (Column)
+	K.vy = 0;       //vertical Coordinates (Row)
 	K.rx = 0;
 	K.rowoff = 0;
 	K.coloff = 0;

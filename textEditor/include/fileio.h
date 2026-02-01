@@ -162,13 +162,12 @@ struct abuf{
 
 #define ABUF_INIT {NULL, 0}
 //
-//create the abAppend() and abFree() function of the buffer
+//create the abAppend() operation and abFree() destructor function of the buffer
 //
 void abAppend(struct abuf *ab, const char *s, int len){
 	char *new = realloc(ab -> b, ab -> len + len);
 
-	if (new == NULL) 
-		return;
+	if (new == NULL) return;
 	memcpy(&new[ab -> len], s, len);
 	ab -> b = new;
 	ab -> len += len;
