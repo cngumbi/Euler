@@ -42,11 +42,11 @@ void editorUpdateRow(erow *row){
 	for(j = 0; j < row->size; j++){
 		if(row->chars[j] == '\t'){
 			row->render[idx++] = ' ';
-			while(idx % EDITOR_TAB_STOP != 0)
-				row->render[idx++] = ' ';
-		}
-		else
+			while(idx % EDITOR_TAB_STOP != 0) row->render[idx++] = ' ';
+		}else{
 			row->render[idx++] = row->chars[j];
+		}
+		
 	}
 	row->render[idx] = '\0';
 	row->rsize = idx;

@@ -11,17 +11,21 @@
 //
 void editorScroll(){
 	K.rx = 0;
-	if(K.vy < K.numrows)
+	if(K.vy < K.numrows){
 		K.rx = editorRowVxToRx(&K.row[K.vy], K.vx);
-
-	if(K.vy < K.rowoff)
+	}
+	if(K.vy < K.rowoff){
 		K.rowoff = K.vy;
-	if(K.vy >= K.rowoff + K.screenrows)
+	}
+	if(K.vy >= K.rowoff + K.screenrows){
 		K.rowoff = K.vy - K.screenrows + 1;
-	if(K.rx < K.coloff)
+	}
+	if(K.rx < K.coloff){
 		K.coloff = K.rx;
-	if(K.rx >= K.coloff + K.screencols)
+	}
+	if(K.rx >= K.coloff + K.screencols){
 		K.coloff = K.rx - K.screencols + 1;
+	}
 }
 void editorDrawRows(struct abuf *ab){
 	int y;
@@ -47,10 +51,8 @@ void editorDrawRows(struct abuf *ab){
 		}
 		else {
 			int len = K.row[filerow].rsize - K.coloff;
-			if(len < 0)
-				len = 0;
-			if(len > K.screencols)
-				len = K.screencols;
+			if(len < 0) len = 0;
+			if(len > K.screencols) len = K.screencols;
 			char *c = &K.row[filerow].render[K.coloff];
 			unsigned char *hl = &K.row[filerow].hl[K.coloff];
 			int current_color = -1;
@@ -225,7 +227,7 @@ void editorMoveCursor(int key){
 			if(K.vy != 0){
 				K.vx++;
 			}
-			else if(row && K.vx == row->size){
+			else if((row && K.vx) == row->size){
 				K.vy++;
 				K.vx = 0;
 			}
@@ -242,8 +244,9 @@ void editorMoveCursor(int key){
 
 	row = (K.vy >= K.numrows) ? NULL : &K.row[K.vy];
 	int rowlen = row ? row -> size : 0;
-	if(K.vx > rowlen)
+	if(K.vx > rowlen){
 		K.vx = rowlen;
+	}
 }
 void editorProcessKeypress(){
 	static int quit_times = EDITOR_QUIT_TIMES;
