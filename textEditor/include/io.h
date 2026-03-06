@@ -99,8 +99,7 @@ void editorDrawStatusBar(struct abuf *ab){
 	char status[80], rstatus[80];
 	int len = snprintf(status, sizeof(status), ".20%s - %d lines %s", K.filename ? K.filename : "[No Name]", K.numrows, K.dirty ? "(modified)" : "");
 	int rlen = snprintf(rstatus, sizeof(rstatus),"%s | %d/%d", K.syntax ? K.syntax->filetype : "no ft", K.vy + 1, K.numrows);
-	if(len > K.screencols)
-		len = K.screencols;
+	if(len > K.screencols) len = K.screencols;
 	abAppend(ab, status, len);
 	while (len < K.screencols){
 		if(K.screencols - len == rlen){
@@ -119,10 +118,8 @@ void editorDrawStatusBar(struct abuf *ab){
 void editorDrawMessageBar(struct abuf *ab){
 	abAppend(ab, "\x1b[K",3);
 	int msglen = strlen(K.statusmsg);
-	if(msglen > K.screencols)
-		msglen = K.screencols;
-	if(msglen && time(NULL) - K.statusmsg_time < 5)
-		abAppend(ab, K.statusmsg, msglen);
+	if(msglen > K.screencols) msglen = K.screencols;
+	if(msglen && time(NULL) - K.statusmsg_time < 5) abAppend(ab, K.statusmsg, msglen);
 }
 //
 //create a function to refresh screen
@@ -290,8 +287,7 @@ void editorProcessKeypress(){
 		case BACKSPACE:
 		case CTRL_KEY('h'):
 		case DEL_KEY:
-			if(v == DEL_KEY)
-				editorMoveCursor(ARROW_RIGHT);
+			if(v == DEL_KEY) editorMoveCursor(ARROW_RIGHT);
 			editorDelChar();
 			break;
 
@@ -346,7 +342,7 @@ void initEditor(){
 	K.syntax = NULL;
 
 	if(getWindowSize(&K.screenrows, &K.screencols) == -1) die("getWindowSize");
-	K.screenrows -= 2;
+	K.screenrows -= 2; //set the status bar size at the bottom of the editor
 }
 
 #endif

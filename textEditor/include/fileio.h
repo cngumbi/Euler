@@ -9,7 +9,7 @@
 //********************FILE i/o*************************
 //
 char *editorRowsToString(int *buflen){
-	int totlen = 0;
+	int totlen = 0;  //total length
 	int j;
 	for(j = 0; j < K.numrows; j++)
 		totlen += K.row[j].size + 1;
@@ -76,8 +76,8 @@ void editorSave(){
 		}
 		close(fb);
 	}
-
 	free(buf);
+	editorSetStatusMessage("Can't Save! I/O error: %s", strerror(errno));
 }
 //
 //*********************FIND**************************

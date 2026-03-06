@@ -39,7 +39,7 @@ struct editorConfig{
 	int numrows;
 	erow *row;
 	int dirty;
-	char *filename;
+	char *filename; //file name
 	char statusmsg[80];
 	time_t statusmsg_time;
 	struct editorSyntax *syntax;
