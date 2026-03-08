@@ -8,10 +8,11 @@
 //
 //******************SYNTAX*********************************
 //
-const char *C_HL_extentions[] = {".c", ".h", ".cpp", NULL};
-const char *HTML_HL_extensions[] = {".html", ".htm", ".xhtml", NULL};
+char *C_HL_extensions[] = {".c", ".h", ".cpp", NULL};
+char *HTML_HL_extensions[] = {".html", ".htm", ".xhtml", NULL};
+char *CSS_HL_extensions[] = {".css", NULL};
 
-const char *C_HL_Keywords[] = {
+char *C_HL_Keywords[] = {
 	"switch", "if", "while", "for", "break", "continue", "return", "else",
 	"struct", "union", "typedef", "static", "enum", "class", "case",
 
@@ -19,15 +20,36 @@ const char *C_HL_Keywords[] = {
 	"void|", NULL
 };
 
-const char *HTML_HL_keywords[] = {
+char *HTML_HL_keywords[] = {
+	//Core HTML tags
 	"html", "head", "title", "body", "div", "span", "p", "a",
 	"img", "script", "style", "link", "meta", "header", "footer",
-	"section", "article", "nav", "main", "form", "input", "button",
-	"table", "tr", "td", "th", "ul", "ol", "li",
+	"section", "article", "nav", "main", 
+	
+	//Layout
+	"table","thead", "tbody", "tr", "td", "th", 
+	"ul", "ol", "li",
 
+	//Forms
+	"form", "input", "button", "textarea", "label",
+	"select", "option",
+
+	//media
+	"video", "audio", "canvas", "svg",
+
+	//Attributes
 	"class|", "id|", "src|", "href|", "alt|", "type|",
-	"name|", "value|", "method|", "action|", NULL
+	"name|", "value|", "method|", "action|", "width|",
+	"height|", "style|", "rel|", "placeholder",
+	"checked|", "disabled|",NULL
 };
+char *CSS_HL_keywords[] = {
+	"color", "background", "margin", "padding", "border",
+	"display", "flex", "grid", "position", "absolute",
+	"relative", "font", "font-size", "width", "height",
+
+	NULL
+}
 
 //
 //***********************SYNTAX DATABASE*****************
@@ -36,7 +58,7 @@ struct editorSyntax HLDB[] = {
 	/*C Language*/
 	{
 		"c",
-		C_HL_extentions,
+		C_HL_extensions,
 		C_HL_Keywords,
 		"//", "/*", "*/",
 		HL_HIGHLIGHT_NUMBERS | HL_HIGHLIGHT_STRINGS
