@@ -1,3 +1,3 @@
 # Euler
-Its a terminal based text editor
+Its a linux based terminal based text editor
 for free
